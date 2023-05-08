@@ -3,8 +3,24 @@ var actionForm = $("#actionForm");
 $(".page-item a").on("click", function(e) {
 	e.preventDefault();
 	console.log('click');
-	actionForm.find("input[name='pageNum']").val($(this).attr("href"));
-	actionForm.submit();
+	pageNumber = $(this).attr("href");
+	
+	// data에 선택된 관심스택, 모집분야 값들을 담는다
+	let data = {pageNum: pageNumber};
+			
+	// filter 처리할 ajax
+	$.ajax({
+		type: "GET", // 요청 방식
+		url: "/board/mainWithFilter", //요청 URL
+		data: data, // 요청 데이터
+		success: function(data) {
+			// 요청 성공 시 콜백 함수
+			$('#main-filter').html(data);
+		}, 
+		error: function(xhr, status, error) {
+			console.log(status + ": " + error);
+		}
+	});		
 });
 	
 $(".move").on("click", function(e) {

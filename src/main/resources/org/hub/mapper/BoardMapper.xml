@@ -132,6 +132,9 @@
 		<if test="status == true">
 			AND status = 'opened'
 		</if>
+		<if test="status == false">
+			AND status in ('opened','closed')
+		</if>
 		
 	</select>
 	
@@ -146,6 +149,9 @@
 		<!-- status 값이 true이면 '모집중 글만 보기 on'인 상태 -->
 		<if test="status == true">
 			AND status = 'opened'
+		</if>
+		<if test="status == false">
+			AND status in ('opened','closed')
 		</if>
 	</select>
 	
@@ -165,7 +171,12 @@
 		<!-- status 값이 true이면 '모집중 글만 보기 on'인 상태 -->
 		<if test="status == true">
 			AND status = 'opened'
-		</if>)
+		</if>
+		<if test="status == false">
+			AND status in ('opened','closed')
+		</if>
+		
+		)
 	<![CDATA[
 		WHERE rn > (#{pageNum} - 1) * #{amount}
 	]]>
@@ -189,16 +200,21 @@
 
 		<include refid="criteria"></include>
 		
+		<!-- status 값이 true이면 '모집중 글만 보기 on'인 상태 -->
+		<if test="status == true">
+			status = 'opened'
+		</if>
+		<if test="status == false">
+			status in ('opened','closed')
+		</if>
+		
 		<if test="filters != null and filters.length > 0">
+			AND
 			<foreach collection="filters" item="filter" separator="or">
 				snames LIKE '%'||#{filter}||'%'
 			</foreach>		
 		</if>
-		<!-- status 값이 true이면 '모집중 글만 보기 on'인 상태 -->
-		<if test="status == true">
-			AND status = 'opened'
-		</if>
-		<if test="position != '' ">
+		<if test="position != '' and position != null">
 			AND fnames LIKE '%'||#{position}||'%'
 		</if>
 		
