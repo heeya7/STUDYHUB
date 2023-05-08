@@ -24,7 +24,7 @@ public class UserVO {
 	private List<UserStackVO> snoList;
 	
 	// 프로필 이미지
-	private List<UserAttachVO> attachList;
+	private UserAttachVO attach;
 
 	// 네이버, 카카오, 구글
 	private String usnsType;

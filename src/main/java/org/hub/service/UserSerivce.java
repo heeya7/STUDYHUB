@@ -24,7 +24,7 @@ public interface UserSerivce {
 		public UserVO getByNickname(String unickName);
 		
 		// 회원 프로필 이미지 불러오기
-		public List<UserAttachVO> getAttachList(String uidKey);
+		public UserAttachVO getAttach(String uidKey);
 		
 		// 회원정보 수정
 		public boolean modify(UserVO user);

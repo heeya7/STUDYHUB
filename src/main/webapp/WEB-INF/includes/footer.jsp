@@ -46,25 +46,23 @@ $(document).ready(function() {
 	(function() { // 즉시 실행 함수
 		// uidkey는 글마다 다르므로 배열로 저장해서 반복문으로 처리 
 		uidkeys.forEach(function(uidKey, index) {
-			$.getJSON("/user/getAttachList", {uidKey:uidKey}, function(arr) {
+			$.getJSON("/user/getAttach", {uidKey:uidKey}, function(attach) {
+				console.log(attach);
 				var str = "";
 				
-				if(arr.length == 0){
+				if(attach == null){
 					str += "<li><div><img width='30px' height='30px' aspect-ratio='auto 30/30' display='block' border-radius='50%' object-fit='cover'  src='/resources/Images/profileLogo.png'></div></li>";					
-				} else {
-					$(arr).each(function(i, attach){
-						
+				} else {						
 						//image type
 						if(attach.fileType) {
 							var fileCallPath = encodeURIComponent( attach.uploadPath+ "/s_" + attach.uuid +"_"+attach.fileName);
 							
 							str += "<li data-path='"+attach.uploadPath+"' data-uuid='"+attach.uuid+
 							"' data-filename='"+attach.fileName+"' data-type='"+attach.fileType+"' ><div>";
-							str += "<img width='30px' height='30px' aspect-ratio='auto 30/30' display='block' style='border-radius: 50%' object-fit='cover'  src='/display?fileName="+fileCallPath+"'>";
+							str += "<img width='30px' height='30px' aspect-ratio='auto 30/30' display='block' border-radius='50%' object-fit='cover'  src='/display?fileName="+fileCallPath+"'>";
 							str += "</div>";
 							str += "</li>";
-						} 
-					});
+						} 				
 				}
 				$(".uploadResult ul").eq(index).html(str);
 			}); // end getjson
@@ -75,16 +73,16 @@ $(document).ready(function() {
 	(function(){
 		
 		var uidKey = '<c:out value="${ loginUser.uidKey }"/>';
+		console.log(uidKey);
 		var targetA = $("#dropImage");
 		
-		$.getJSON("/user/getAttachList", {uidKey:uidKey}, function(arr){
-			if(arr.length == 0){				
+		$.getJSON("/user/getAttach", {uidKey:uidKey}, function(attach){
+			console.log(attach);
+			if(attach == null){				
 				 targetA.html("<img width='30px' height='30px' style='border-radius: 50%' src='/resources/Images/profileLogo.png'>");
 			} else {
-				$(arr).each(function(i, attach){
 					var fileCallPath =  encodeURIComponent( attach.uploadPath+ "/s_"+attach.uuid +"_"+attach.fileName);
 					targetA.html("<img width='40px' height='40px' style='border-radius: 50%' width='40px' src='/display?fileName="+fileCallPath+"'>");
-				});
 			}			 
 		}); //end getjson						
 						

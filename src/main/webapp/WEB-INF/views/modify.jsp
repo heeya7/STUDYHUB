@@ -570,23 +570,22 @@
 	$(document).ready(function() {
 		
 		// jsh <nav> 태그 사용자 이미지 불러오기
-		(function(){			
+		(function(){
+			
 			var uidKey = '<c:out value="${ loginUser.uidKey }"/>';
 			console.log(uidKey);
 			var targetA = $("#dropImage");
 			
-			$.getJSON("/user/getAttachList", {uidKey:uidKey}, function(arr){
-				console.log(arr);
-				if(arr.length == 0){				
+			$.getJSON("/user/getAttach", {uidKey:uidKey}, function(attach){
+				console.log(attach);
+				if(attach == null){				
 					 targetA.html("<img width='30px' height='30px' style='border-radius: 50%' src='/resources/Images/profileLogo.png'>");
 				} else {
-					$(arr).each(function(i, attach){
 						var fileCallPath =  encodeURIComponent( attach.uploadPath+ "/s_"+attach.uuid +"_"+attach.fileName);
 						targetA.html("<img width='40px' height='40px' style='border-radius: 50%' width='40px' src='/display?fileName="+fileCallPath+"'>");
-					});
 				}			 
-			}); //end getjson																
-		})();//end <nav> 사용자 이미지 function	
+			}); //end getjson
+		});
 		
 		/* 초기값 변수에 담기 */
 		var memberNum = "<c:out value="${board.memberNum}"/>"; //모집인원

@@ -62,13 +62,12 @@ public class UserServiceImpl implements UserSerivce {
 			mapper.insert(user); 
 		}
 		
-		if(user.getAttachList() == null || user.getAttachList().size() <=0) {
+		if(user.getAttach() == null) {
 			
 		} else {
-			user.getAttachList().forEach(attach ->{			
-				attach.setUidkey(user.getUidKey());
-				attachMapper.insert(attach);
-			});
+			UserAttachVO attach = user.getAttach();
+			attach.setUidkey(user.getUidKey());
+			attachMapper.insert(attach);
 		}
 		
 		if(user.getSnoList() == null || user.getSnoList().size() <=0) {
@@ -100,11 +99,10 @@ public class UserServiceImpl implements UserSerivce {
 		
 		boolean modifyResult = mapper.update(user) == 1;
 		
-		if(modifyResult && user.getAttachList() !=null && user.getAttachList().size() > 0) {
-			user.getAttachList().forEach(attach -> {
-				attach.setUidkey(user.getUidKey());
-				attachMapper.insert(attach);
-			});
+		if(modifyResult && user.getAttach() !=null) {
+			UserAttachVO attach = user.getAttach();
+			attach.setUidkey(user.getUidKey());
+			attachMapper.insert(attach);				
 		}
 		
 		if(modifyResult && user.getSnoList() !=null && user.getSnoList().size() > 0) {
@@ -140,7 +138,7 @@ public class UserServiceImpl implements UserSerivce {
 	
 	// 회원 프로필 이미지 불러오기
 	@Override
-	public List<UserAttachVO> getAttachList(String uidKey) {
+	public UserAttachVO getAttach(String uidKey) {
 
 		log.info("get Attach list by uidKey" + uidKey);
 		

@@ -38,26 +38,23 @@ $(document).ready(function() {
 	(function() { // 즉시 실행 함수
 		// uidkey는 글마다 다르므로 배열로 저장해서 반복문으로 처리 
 		uidkeys.forEach(function(uidKey, index) {
-			$.getJSON("/user/getAttachList", {uidKey:uidKey}, function(arr) {
-				console.log(arr);
+			$.getJSON("/user/getAttach", {uidKey:uidKey}, function(attach) {
+				console.log(attach);
 				var str = "";
 				
-				if(arr.length == 0){
-					str += "<li><div><img width='30px' height='30px' aspect-ratio='auto 30/30' display='block' style='border-radius: 50%' object-fit='cover'  src='/resources/Images/profileLogo.png'></div></li>";					
-				} else {
-					$(arr).each(function(i, attach){
-						
+				if(attach == null){
+					str += "<li><div><img width='30px' height='30px' aspect-ratio='auto 30/30' display='block' border-radius='50%' object-fit='cover'  src='/resources/Images/profileLogo.png'></div></li>";					
+				} else {						
 						//image type
 						if(attach.fileType) {
 							var fileCallPath = encodeURIComponent( attach.uploadPath+ "/s_" + attach.uuid +"_"+attach.fileName);
 							
 							str += "<li data-path='"+attach.uploadPath+"' data-uuid='"+attach.uuid+
 							"' data-filename='"+attach.fileName+"' data-type='"+attach.fileType+"' ><div>";
-							str += "<img width='30px' height='30px' aspect-ratio='auto 30/30' display='block' style='border-radius: 50%' object-fit='cover'  src='/display?fileName="+fileCallPath+"'>";
+							str += "<img width='30px' height='30px' aspect-ratio='auto 30/30' display='block' border-radius='50%' object-fit='cover'  src='/display?fileName="+fileCallPath+"'>";
 							str += "</div>";
 							str += "</li>";
-						} 
-					});
+						} 				
 				}
 				$(".uploadResult ul").eq(index).html(str);
 			}); // end getjson

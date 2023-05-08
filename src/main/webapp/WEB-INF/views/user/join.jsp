@@ -212,7 +212,7 @@
 	
 		
 			<!-- 로고 - 메인페이지 연결 -->
-			<a href="/board/main">
+			<a href="/main">
 				<img class="mb-3 rounded mx-auto d-block" src="/resources/Images/norabbitlogo.png" alt="StudyHubLogo" width="320" height=auto>				
 			</a>
 			<h1 class="h4 mb-3 text-center fw-bold">StudyHub에 오신 것을 환영합니다!</h1>
@@ -517,22 +517,18 @@
 	 	console.log("submit clicked");	    	 		 	
 	 	
 	    var istr = "";
-	     if(flag) {
-		     $(".uploadResult ul li").each(function(i, obj){
-		      
-		      	var jobj = $(obj);
+	     if(flag) {		    		      
+		      	var jobj = $(".uploadResult ul li");
 		      
 			      console.dir(jobj);
 			      console.log("-------------------------");
 			      console.log(jobj.data("filename"));
 			      
 			      
-			      istr += "<input type='hidden' name='attachList["+i+"].fileName' value='"+jobj.data("filename")+"'>";
-			      istr += "<input type='hidden' name='attachList["+i+"].uuid' value='"+jobj.data("uuid")+"'>";
-			      istr += "<input type='hidden' name='attachList["+i+"].uploadPath' value='"+jobj.data("path")+"'>";
-			      istr += "<input type='hidden' name='attachList["+i+"].fileType' value='"+ jobj.data("type")+"'>";
-		      
-		    });
+			      istr += "<input type='hidden' name='attach.fileName' value='"+jobj.data("filename")+"'>";
+			      istr += "<input type='hidden' name='attach.uuid' value='"+jobj.data("uuid")+"'>";
+			      istr += "<input type='hidden' name='attach.uploadPath' value='"+jobj.data("path")+"'>";
+			      istr += "<input type='hidden' name='attach.fileType' value='"+ jobj.data("type")+"'>";		      
 		 }
 	    
 	    console.log(istr);      		        

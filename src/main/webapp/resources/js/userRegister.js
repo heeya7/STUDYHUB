@@ -1,90 +1,4 @@
  var flag = false;
- 
- // 다음, 돌아가기, 가입완료 버튼 관련 함수   
-    const firstTab = $("#pills-home-tab"); 
-    const secondTab = $("#pills-profile-tab");
-    const thirdTab = $("#pills-contact-tab");
-    	
-    const firstContent = $("#pills-home"); 
-    const secondContent = $("#pills-profile");
-    const thirdContent = $("#pills-contact");
-    
-    $(document).ready(function () {    	
-    	
-    	firstTab.addClass("active");
-    	secondTab.addClass("disabled");
-    	thirdTab.addClass("disabled");
-    	
-    	$("#to2step").click(function(){
-    		
-    		var result = checkNickNull();
-    		
-    		if(result == false){   			
-    			
-    			$('#unickName').val('');
-    			return;
-    		} else {    		
-    		
-    	    console.log("to2step"); 
-			var unickName = $('#unickName').val();
-			$("#pills-profile-div").html(""+unickName+"님, 반가워요.<br>어떤 언어, 프레임워크에 관심이 있는지 알려주세요!");
-			
-    	    secondTab.removeClass("disabled");
-    	    secondTab.addClass("active");
-    	    
-    	    firstTab.addClass("disabled"); 	    			   	       	    
-    	    
-    	    secondContent.addClass("show active");
-    	    firstContent.removeClass("show active");
-    	    
-    		}
-    		
-    	});
-    	
-    	$("#to3step").click(function(){
-    		var unickName = $('#unickName').val();
-			$("#pills-contact-div").html(""+unickName+"님만의 특별한 이미지를 설정해 보세요.<br>물론, 언제든지 변경할 수 있어요!");
-    		
-    		thirdTab.removeClass("disabled");
-    		thirdTab.addClass("active");    		 
-    		 
-    		secondTab.addClass("disabled");
-    		 
-    		thirdContent.addClass("show active");
-    		secondContent.removeClass("show active");
-    		 
-    	});
-    	
-    	$("#back2step").click(function(){
-    		
-    		thirdTab.removeClass("active");
-    		thirdTab.addClass("disabled");
-    		thirdContent.removeClass("show active");
-    		
-    		secondTab.removeClass("disabled");
-    		secondTab.addClass("active");  		 		
-    		secondContent.addClass("show active"); 		 		   		 
-   		 
-   		});
-    	
-		$("#back1step").click(function(){
-    		
-			secondTab.removeClass("active");
-			secondTab.addClass("disabled");
-			secondContent.removeClass("show active");
-    		
-			firstTab.removeClass("disabled");
-			firstTab.addClass("active");  		 		
-			firstContent.addClass("show active");							 		   		 
-    		
-   		});
-		
-		$("#backuserLogin").click(function(){
-			 window.location.replace("http://localhost:8080/user/login");
-		});     	
-    	
-    	
-    });
     
     // 닉네임 빈칸 확인
     function checkNickNull(){
@@ -139,22 +53,18 @@
 	 	console.log("submit clicked");	    	 		 	
 	 	
 	    var str = "";
-	     if(flag) {
-		     $(".uploadResult ul li").each(function(i, obj){
-		      
-		      	var jobj = $(obj);
+	     if(flag) {		     		      
+		      	var jobj = $(".uploadResult ul li");
 		      
 			      console.dir(jobj);
 			      console.log("-------------------------");
 			      console.log(jobj.data("filename"));
 			      
 			      
-			      str += "<input type='hidden' name='attachList["+i+"].fileName' value='"+jobj.data("filename")+"'>";
-			      str += "<input type='hidden' name='attachList["+i+"].uuid' value='"+jobj.data("uuid")+"'>";
-			      str += "<input type='hidden' name='attachList["+i+"].uploadPath' value='"+jobj.data("path")+"'>";
-			      str += "<input type='hidden' name='attachList["+i+"].fileType' value='"+ jobj.data("type")+"'>";
-		      
-		    });
+			      str += "<input type='hidden' name='attach.fileName' value='"+jobj.data("filename")+"'>";
+			      str += "<input type='hidden' name='attach.uuid' value='"+jobj.data("uuid")+"'>";
+			      str += "<input type='hidden' name='attach.uploadPath' value='"+jobj.data("path")+"'>";
+			      str += "<input type='hidden' name='attach.fileType' value='"+ jobj.data("type")+"'>";		      	   
 		 }
 	    
 	    console.log(str);      		   
@@ -191,17 +101,11 @@
     var formData = new FormData();
     
     var inputFile = $("input[name='uploadFile']");
-    
-    var files = inputFile[0].files;
-    
-    for(var i = 0; i < files.length; i++){
 
-      if(!checkExtension(files[i].name, files[i].size) ){
+      if(!checkExtension(inputFile.name, inputFile.size) ){
         return false;
       }
-      formData.append("uploadFile", files[i]);
-      
-    }
+      formData.append("uploadFile", inputFile);   
     
     $.ajax({
       url: '/uploadAjaxAction',
@@ -219,10 +123,10 @@
     flag=true;
   });  
   
-  function showUploadResult(uploadResultArr){
+  function showUploadResult(uploadResult){
 	
 	/* 업로드된 파일이 없으면 함수를 실행하지 않고 종료 */
-    if(!uploadResultArr || uploadResultArr.length == 0){ return; }
+    if(uploadResult == null){ return; }
     
 	/* 업로드된 파일이 있으면, 스터디허브 이미지 삭제 */
 	$(".uploadResult ul li #photo").remove();
@@ -234,7 +138,7 @@
     
     var deleteBtn = $("#photoDeleteBtn");
     
-    $(uploadResultArr).each(function(i, obj){          
+    var obj = $(uploadResult)        
 		
 		if(obj.image){
 			var fileCallPath =  encodeURIComponent( obj.uploadPath+ "/s_"+obj.uuid +"_"+obj.fileName);
@@ -247,8 +151,6 @@
 			str +"</li>";
 			deleteBtn.attr("data-file",fileCallPath);
 		}
-		
-    });
     
     uploadUL.append(str);
 	

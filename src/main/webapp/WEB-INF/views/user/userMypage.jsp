@@ -49,7 +49,7 @@
 									</label>								 
 								</div>						
 							 <div class="photoDelete">
-							 	<button type="button" data-type="image"  class="btn d-block" id="photoDeleteBtn" style="background-color:#5d5d5d; color:#fff">이미지 제거</button><i class='fa fa-times'></i>
+							 	<button type="button" data-type="image"  class="btn d-block" id="photoDeleteBtn" style="background-color:#5D5D5D; color:#fff">이미지 제거</button><i class='fa fa-times'></i>
 							 </div>
 						</div>
 					</div>
@@ -129,7 +129,7 @@
 				<!-- 버튼 -->
 				<div class="text-end">		
 					  	<button type="submit" data-oper='modify' class="btn mt-5 me-2" style="background-color:#ff914d; color:#fff">완료</button>
-						<button type="submit" data-oper='remove' class="btn btn-outline-danger mt-5" style="background-color: #5D5D5D; color: #fff; border-color: #fff;">회원탈퇴</button>
+						<button type="submit" data-oper='remove' class="btn btn-outline-danger mt-5">회원탈퇴</button>
 				</div>				    			    
 	  		</form>
 		
@@ -200,9 +200,9 @@ $(document).ready(function(){
 		var uidKey = '<c:out value="${user.uidKey}"/>';
 		var targetA = $("#dropImage");
 		
-		$.getJSON("/user/getAttachList", {uidKey:uidKey}, function(arr){
-			console.log(arr);
-			if(arr.length == 0){
+		$.getJSON("/user/getAttach", {uidKey:uidKey}, function(attach){
+			console.log(attach);
+			if(attach == null){
 				var targetLi = $(".uploadResult ul li img");
 				 targetLi.attr("src", "/resources/Images/profileLogo.png");
 				 targetA.html("<img width='30px' height='30px' style='border-radius: 50%' src='/resources/Images/profileLogo.png'>");
@@ -211,7 +211,6 @@ $(document).ready(function(){
 			 var str = "";
 			 
 			 var deleteBtn = $("#photoDeleteBtn");  
-		       $(arr).each(function(i, attach){
 		       		
 		         //image type
 		         if(attach.fileType){
@@ -224,7 +223,7 @@ $(document).ready(function(){
 		           deleteBtn.attr("data-file",fileCallPath);
 		           targetA.html("<img width='40px' height='40px' style='border-radius: 50%' width='40px' src='/display?fileName="+fileCallPath+"'>");
 		         }
-		       });
+
 		       
 		       $(".uploadResult ul").html(str);
 		}); //end getjson						
@@ -287,24 +286,21 @@ $(document).ready(function(e){
     	
 	} else if(operation === 'modify') { //수정하는 완료 버튼일때
     
-	    var str = "";	    
-
-	    $(".uploadResult ul li").each(function(i, obj){
+	    var str = "";	    	    
 	      	
-	    	var jobj = $(obj);
+	    var jobj = $(".uploadResult ul li");
 	    	
-	    	 if (jobj.find("img").attr("src") === "/resources/Images/profileLogo.png") {
-		    	  return;
-		     }	      	      	      
+	    if (jobj.find("img").attr("src") === "/resources/Images/profileLogo.png") {
+		     return;
+		}	      	      	      
 	      
-	      console.dir(jobj);	      	      
+	     console.dir(jobj);	      	      
 	      
-	      str += "<input type='hidden' name='attachList["+i+"].fileName' value='"+jobj.data("filename")+"'>";
-	      str += "<input type='hidden' name='attachList["+i+"].uuid' value='"+jobj.data("uuid")+"'>";
-	      str += "<input type='hidden' name='attachList["+i+"].uploadPath' value='"+jobj.data("path")+"'>";
-	      str += "<input type='hidden' name='attachList["+i+"].fileType' value='"+ jobj.data("type")+"'>";
-	      
-	    });
+	      str += "<input type='hidden' name='attach.fileName' value='"+jobj.data("filename")+"'>";
+	      str += "<input type='hidden' name='attach.uuid' value='"+jobj.data("uuid")+"'>";
+	      str += "<input type='hidden' name='attach.uploadPath' value='"+jobj.data("path")+"'>";
+	      str += "<input type='hidden' name='attach.fileType' value='"+ jobj.data("type")+"'>";
+
 	    
 	    $("#sno option").filter(":selected").each(function(index) {
 	    	str += "<input type='hidden' name='snoList["+index+"].sno' value='"+$(this).val()+"'>";
@@ -416,7 +412,7 @@ $(document).ready(function(e){
 	
 	
   }
-  // = = = 여기까지는 기존과 똑같이
+ 
   
   /* 이미지 제거 버튼을 클릭하면 화면에서만 삭제 (서버 및 복사본은 완료를 눌렀을 때 적용할것임) */
   $(".photoDelete").on("click", "button", function(e){

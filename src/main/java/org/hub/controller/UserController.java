@@ -82,6 +82,9 @@ public class UserController {
     private BoardService boardService;
 	
 	private UserVO user;
+
+	
+	// public static final String LOGIN = "loginUser"; //이름이 loginUser인 세션
 	 
 	// 비밀번호 찾기 화면으로 이동
 	@GetMapping(value="/findpw")
@@ -297,8 +300,8 @@ public class UserController {
 		log.info("= = Post user join = = ");
 		log.info("join: " + user);
 
-		if (user.getAttachList() != null) {
-			user.getAttachList().forEach(attach -> log.info(attach));
+		if (user.getAttach() != null) {
+			log.info(user.getAttach());
 		}
 
 		if (user.getSnoList() != null) {
@@ -356,12 +359,12 @@ public class UserController {
 	public String remove(@RequestParam("uidKey") String uidKey, RedirectAttributes rttr, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		log.info("remove..." + uidKey);
 		// 회원 탈퇴 전 회원의 이미지 파일 확보
-		List<UserAttachVO> attachList = userService.getAttachList(uidKey);
+		UserAttachVO attach = userService.getAttach(uidKey);
 
 		if (userService.remove(uidKey)) { // 회원 정보 삭제
 
 			// delete Attach Files
-			deleteFiles(attachList); // c:upload 밑 복사본 삭제
+			deleteFiles(attach); // c:upload 밑 복사본 삭제
 
 			rttr.addFlashAttribute("result", "success");
 		}
@@ -379,13 +382,14 @@ public class UserController {
 		return "redirect:/board/main";
 	}
 
+
 	// 회원정보 수정
 	@PostMapping("/modify")
 	public String modify(UserVO user, RedirectAttributes rttr) {
 		log.info(" = = = = = modify:" + user);
 
-		if (user.getAttachList() != null) {
-			user.getAttachList().forEach(attach -> log.info(attach));
+		if (user.getAttach() != null) {
+			log.info(user.getAttach());
 		}
 
 		if (user.getSnoList() != null) {
@@ -400,12 +404,12 @@ public class UserController {
 	}
 
 	// 회원 프로필 이미지 불러오기
-	@GetMapping(value = "/getAttachList", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@GetMapping(value = "/getAttach", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@ResponseBody
-	public ResponseEntity<List<UserAttachVO>> getAttachList(String uidKey) {
+	public ResponseEntity<UserAttachVO> getAttach(String uidKey) {
 		// uidkey를 이용해 이미지파일과 관련된 데이터를 json으로 반환하도록 처리 - @ResponseBody 어노테이션 적용
-		log.info("getAttachList" + uidKey);
-		return new ResponseEntity<>(userService.getAttachList(uidKey), HttpStatus.OK);
+		log.info("getAttach" + uidKey);
+		return new ResponseEntity<>(userService.getAttach(uidKey), HttpStatus.OK);
 	}
 
 	// 회원 관심스택 불러오기
@@ -418,16 +422,15 @@ public class UserController {
 	}
 
 	// upload 폴더 밑 이미지 복사본 삭제해주는 메소드
-	private void deleteFiles(List<UserAttachVO> attachList) {
+	private void deleteFiles(UserAttachVO attach) {
 
-		if (attachList == null || attachList.size() == 0) {
+		if (attach == null) {
 			return;
 		}
 
 		log.info("delete attach files...................");
-		log.info(attachList);
-
-		attachList.forEach(attach -> {
+		log.info(attach);
+		
 			try {
 				Path file = Paths.get(
 						"C:\\upload\\" + attach.getUploadPath() + "\\" + attach.getUuid() + "_" + attach.getFileName());
@@ -445,7 +448,7 @@ public class UserController {
 			} catch (Exception e) {
 				log.error("delete file error" + e.getMessage());
 			} // end catch
-		});// end foreachd
+		
 	}
 	
 	
@@ -458,10 +461,7 @@ public class UserController {
 	public String getMain(@ModelAttribute("board") BoardVO board, @ModelAttribute("cri") Criteria cri, Model model, HttpSession session, UserVO vo) {
 		System.out.println("interest로 이동");
 		log.info("intereset 이동");
-		
-		// 모집중인 글만 추천하게끔 setStatus 'true'
-		cri.setStatus(true);
-		
+
 		List<BoardVO> boardList = service.getList(cri);
 		model.addAttribute("board", boardList);
 
@@ -508,9 +508,7 @@ public class UserController {
 		public String getRecommend(@ModelAttribute("board") BoardVO board, @ModelAttribute("cri") Criteria cri, Model model, HttpSession session, UserVO vo) {
 			System.out.println("recommend로 이동");
 			log.info("recommend 이동");
-			
-			// 모집중인 글만 추천하게끔 setStatus 'true'
-			cri.setStatus(true);
+
 			List<BoardVO> boardList = service.getList(cri);
 			model.addAttribute("board", boardList);
  

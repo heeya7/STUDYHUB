@@ -18,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,115 +31,76 @@ import net.coobird.thumbnailator.Thumbnailator;
 @Log4j
 public class UploadController {
 	
-	@GetMapping("/uploadForm")
-	public void uploadForm() {
-		log.info("upload form");
-	}
-	
-	@PostMapping("/uploadFormAction")
-	public void uploadFormPost(MultipartFile[] uploadFile, Model model) {
-		
-		String uploadFolder = "C:\\upload";
-		
-		for (MultipartFile multipartFile : uploadFile) {
-			
-			log.info("= = = = = = = = = = = = = = = = = =");
-			log.info("Upload File Name : " + multipartFile.getOriginalFilename());
-			log.info("Upload File Size : " + multipartFile.getSize());
-			
-			File saveFile = new File(uploadFolder, multipartFile.getOriginalFilename());
-			
-			try {
-				multipartFile.transferTo(saveFile);	
-			} catch(Exception e) {
-				log.error(e.getMessage());
-			} // end catch
-			
-		} //end for		
-		
-	}
-	
-	@GetMapping("/uploadAjax")
-	public void uploadAjax() {
-		log.info("upload ajax");
-	}
-	
 	@PostMapping(value = "/uploadAjaxAction", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@ResponseBody
-	public ResponseEntity<List<AttachFileDTO>> uploadAjaxPost(MultipartFile[] uploadFile) {
+	public ResponseEntity<AttachFileDTO> uploadAjaxPost(MultipartFile uploadFile) {
 		
 		log.info("update ajax post . . . . . . .");
 		
-		List<AttachFileDTO> list = new ArrayList<AttachFileDTO>();
+		// 사용자 이미지 복사본/섬네일이 저장되는 위치
 		String uploadFolder = "C:\\upload";
 		
+		// '파일을 저장할 폴더 경로 문자열' 반환받아 변수에 저장
 		String uploadFolderPath = getFolder();
+		
 		//make folder - - - - - -
 		File uploadPath = new File(uploadFolder, uploadFolderPath);
 		log.info("upload path: " + uploadPath);
 		
 		// 해당 경로가 있는지 검사
 		if (uploadPath.exists() == false) { 
-		 uploadPath.mkdirs();
-		 }
-		// make yyyy/MM/dd folder
+		 uploadPath.mkdirs(); // make yyyy/MM/dd folder
+		}				
+			
+		AttachFileDTO attachDTO = new AttachFileDTO();
+
+		String uploadFileName = uploadFile.getOriginalFilename();
+
+		log.info("= = = = = = = = = = = = = = = = = =");
+		log.info("Upload File Name : " + uploadFile.getOriginalFilename());
+		log.info("Upload File Size : " + uploadFile.getSize());
+		log.info("only file name: " + uploadFileName);
+		log.info("= = = = = = = = = = = = = = = = = =");
 		
-		for (MultipartFile multipartFile : uploadFile) {
-			
-			AttachFileDTO attachDTO = new AttachFileDTO();
-			
-			String uploadFileName = multipartFile.getOriginalFilename();
-			
-			log.info("= = = = = = = = = = = = = = = = = =");
-			log.info("Upload File Name : " + multipartFile.getOriginalFilename());
-			log.info("Upload File Size : " + multipartFile.getSize());
-			
-			log.info("only file name: " + uploadFileName);
-			attachDTO.setFileName(uploadFileName);
-			
-			/* 첨부 파일은 random으로 임의의값을 생성 => uuid_원래파일이름 */
-			UUID uuid = UUID.randomUUID();
-			
-			uploadFileName = uuid.toString() + "_" + uploadFileName;						
-			
-			try {
-				File saveFile = new File(uploadPath, uploadFileName);
-				multipartFile.transferTo(saveFile);
-				
-				attachDTO.setUuid(uuid.toString());
-				attachDTO.setUploadPath(uploadFolderPath);
-				
-				// check image type file
-				if (checkImageType(saveFile)) {
-				
+		attachDTO.setFileName(uploadFileName);
+
+		/* random으로 임의의값을 생성한 후 => uuid_원래파일이름 */
+		UUID uuid = UUID.randomUUID();
+
+		uploadFileName = uuid.toString() + "_" + uploadFileName;
+		
+		// saveFile = 섬네일용 복사본 만들기
+		try {
+			// 1. 업로드된 파일을 저장할 경로와 파일 이름을 인자로 받아서, 해당 경로에 지정된 이름의 파일 객체를 생성
+			File saveFile = new File(uploadPath, uploadFileName);
+			// 2. 업로드된 파일을 생성한 파일 객체에 저장
+			uploadFile.transferTo(saveFile);
+
+			attachDTO.setUuid(uuid.toString());
+			attachDTO.setUploadPath(uploadFolderPath);
+
+			// check image type file
+			if (checkImageType(saveFile)) {
 				attachDTO.setImage(true);
-				
-					
-				FileOutputStream thumbnail = new FileOutputStream(new File(uploadPath, "s_" +uploadFileName));
-				
-				Thumbnailator.createThumbnail(multipartFile.getInputStream(), thumbnail, 100,100);
-				
+				FileOutputStream thumbnail = new FileOutputStream(new File(uploadPath, "s_" + uploadFileName));
+				Thumbnailator.createThumbnail(uploadFile.getInputStream(), thumbnail, 100, 100);
+
 				thumbnail.close();
-				} // end if
-				
-				// add to List
-				list.add(attachDTO);
-				
-			} catch(Exception e) {
-				e.printStackTrace();
-			} // end catch
-			
-		} //end for	
+			} // end if
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} // end catch
 		
-		return new ResponseEntity<List<AttachFileDTO>>(list, HttpStatus.OK);
+		return new ResponseEntity<AttachFileDTO>(attachDTO, HttpStatus.OK);
 		
 	}
 	
-	// 특정한 파일 이름을 받아 이미지 데이터를 전송하는 코드 
+	// 특정한 파일 이름을 받아 이미지 데이터를 전송하는 메소드
 	@GetMapping("/display")	
 	@ResponseBody
 	public ResponseEntity<byte[]> getFile(String fileName) {
-								// 문자열로 파일의 경로가 포함된 fileName을 받고, byte[]를 전송
+		// 문자열로 파일의 경로가 포함된 fileName을 받고, byte[]를 전송
 		log.info("fileName: " + fileName);
 
 		File file = new File("c:\\upload\\" + fileName);
@@ -151,18 +111,17 @@ public class UploadController {
 
 		try {
 			HttpHeaders header = new HttpHeaders();
-											// 브라우저에 보내주는 MIME 타입이 파일의 종류에 따라 달라지는 것을 해결하기위함
+			// 브라우저에 보내주는 MIME 타입이 파일의 종류에 따라 달라지는 것을 해결하기위함								
 			header.add("Content-Type", Files.probeContentType(file.toPath()));
 			result = new ResponseEntity<byte[]>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;
 	}
 	
 	
-	// 서버에서 첨부파일의 삭제
+	// 서버에서 첨부파일 삭제
 	@PostMapping("/deleteFile")
 	@ResponseBody
 	public ResponseEntity<String> deleteFile(String fileName, String type) {
@@ -175,7 +134,8 @@ public class UploadController {
 			file = new File("c:\\upload\\" + URLDecoder.decode(fileName, "UTF-8"));
 
 			file.delete();
-
+			
+			// 이미지 파일인지 확인 후, 섬네일용 복사본도 삭제
 			if (type.equals("image")) {
 
 				String largeFileName = file.getAbsolutePath().replace("s_", "");
@@ -196,29 +156,31 @@ public class UploadController {
 
 	}
 	
+	// 인자로 받는 파일이 이미지 파일인지 확인
 	private boolean checkImageType(File file) {
-
-		try {
+		
+		try {					// MIME 타입을 반환
 			String contentType = Files.probeContentType(file.toPath());
-
 			return contentType.startsWith("image");
-
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		return false;
 	}
 	
-	private String getFolder() { // 오늘날짜의 경로를 문자열로 생성 -> 폴더 경로로 수정 후 반환
-
+	// 오늘날짜의 경로를 문자열로 생성 -> 폴더 경로로 수정 후 반환하는 메소드
+	private String getFolder() { 
+		// SimpleDataFormat 클래스를 이용해 날짜를 원하는 형식으로 출력할 수 있음
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
+		
+		// 현재 날짜 생성
 		Date date = new Date();
-
+		
+		// SimpleDataFormat 클래스에서 생성한 형식으로 현재 날짜를 문자열로 변환
 		String str = sdf.format(date);
-
+		
+		// 생성된 문자열에서 "-" 문자를 운영체제에 맞는 파일 경로 구분자로 변경 후 반환
 		return str.replace("-", File.separator);
 	}
 	
