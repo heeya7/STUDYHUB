@@ -5,7 +5,7 @@
 ◾ 개발 팀 : 오벤져스(김동현, 강윤지, 박명옥, 손준서, 조세희) <br>
 </div>
 <hr>
-  🛠 Used Tools & Skills 🛠<br><br>
+  🛠 <b>Used Tools & Skills</b> 🛠<br><br>
 
   <div> 
     <img src="https://img.shields.io/badge/Java-007396?style=flat&logo=Java&logoColor=white" />
@@ -27,8 +27,9 @@
     <img src="https://img.shields.io/badge/STS-6DB33F?style=flat&logo=STS&logoColor=white" />
     <img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=GitHub&logoColor=white" />	
     <img src="https://img.shields.io/badge/Jira-0052CC?style=flat&logo=Jira&logoColor=white" />
-  </div><br>
+  </div>
 <hr>
-💭 Output <br> 
-기획안ㅣ요구사항 정의서ㅣ화면설계서ㅣDB설계ㅣ클래스다이어그램ㅣ수행일지ㅣ팀 포트폴리오(발표용) in <a href="https://drive.google.com/drive/folders/12MiA-sLLFkLIDzwI3Ad7u3kWeMJgjZtt?usp=sharing">구글드라이브</a>
-<br><br>🏆 프로젝트 경연대회 우수상 수상<br><br>
+💭 <b>Output</b> in <a href="https://drive.google.com/drive/folders/12MiA-sLLFkLIDzwI3Ad7u3kWeMJgjZtt?usp=sharing">Google Drive</a><br> 
+◾ 기획안ㅣ요구사항 정의서ㅣ화면설계서ㅣDB설계ㅣ클래스다이어그램ㅣ수행일지ㅣ팀 포트폴리오(발표용)
+<hr>
+🏆 프로젝트 경연대회 우수상 수상<br><br>
