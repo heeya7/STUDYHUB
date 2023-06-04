@@ -28,6 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.social.google.connect.GoogleConnectionFactory;
 import org.springframework.social.oauth2.GrantType;
 import org.springframework.social.oauth2.OAuth2Operations;
@@ -41,7 +42,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.WebUtils;
 
@@ -54,7 +54,6 @@ import lombok.extern.log4j.Log4j;
 @RequestMapping("/user/*")
 @RequiredArgsConstructor
 public class UserController {
-	//마무리
 	
 	@NonNull
 	@Inject
@@ -82,13 +81,10 @@ public class UserController {
     private BoardService boardService;
 	
 	private UserVO user;
-
-	
-	// public static final String LOGIN = "loginUser"; //이름이 loginUser인 세션
 	 
 	// 비밀번호 찾기 화면으로 이동
 	@GetMapping(value="/findpw")
-	public String findid() {
+	public String findId() {
 		log.info("pw 찾기(화면) controller 진입");
 		return "/user/findpw";
 	}
@@ -104,7 +100,7 @@ public class UserController {
 	
 	// 비밀번호 변경 페이지로 이동
 	@GetMapping(value="/resetpw")
-	public String resetpw(String uidKey, Model model) {
+	public String resetPw(String uidKey, Model model) {
 		log.info("pw 변경 페이지로 이동하는 controller 진입");
 		model.addAttribute("uidKey", uidKey);
 		return "user/resetpw";
@@ -112,10 +108,11 @@ public class UserController {
 	
 	// 비밀번호 변경 POST
 	@PostMapping(value="/resetpwPost")
-	public String resetpwPost(String uidKey, String userPw) {
+	public String resetpwPost(String uidKey, String inputPw) {
 		log.info("pw 변경 POST controller 진입");
-		userService.modify(uidKey, userPw);
+		
 		// 비밀번호 변경 후 로그인페이지 이동
+		userService.modify(uidKey, inputPw);		
 		return "redirect:/user/login";		
 	}
 	
@@ -147,6 +144,7 @@ public class UserController {
 			return "fail"; // 일치X => 일치하는 사용자 없음
 		}						
 	}
+	
 	// 로그아웃 그리고 메인화면으로
 	@GetMapping(value = "/logout")
 	public String logout(HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -195,15 +193,13 @@ public class UserController {
 	@PostMapping(value = "/loginPost")
 	public void loginPOST(HttpServletRequest request, UserVO user, Model model) throws Exception {
 		log.info("loginPost 메서드 진입");
-		log.info("전달된 데이터: " + user);
-
 		log.info("jsh 로그인 시도 유저 = = = = = " + user);
-
-		UserVO uvo = userService.login(user);
-
+		
+		boolean loginResult = userService.login(user);	
+		
 		// 로그인 성공
-		if (uvo != null) {
-			model.addAttribute("user", uvo);			
+		if (loginResult) {
+			model.addAttribute("user", user);			
 		} else { // 로그인 실패
 			model.addAttribute("loginResult", "아이디 또는 비밀번호가 일치하지 않습니다.");
 		}
@@ -306,7 +302,8 @@ public class UserController {
 
 		if (user.getSnoList() != null) {
 			user.getSnoList().forEach(sno -> log.info(sno));
-		}
+		}		
+		
 		// service.reigster 가면 소셜 회원가입/일반 회원가입 나눠서 처리해줌
 		userService.register(user);
 
@@ -504,34 +501,35 @@ public class UserController {
 	}
 	
 	// 추천글 페이지
-		@GetMapping("/recommend")
-		public String getRecommend(@ModelAttribute("board") BoardVO board, @ModelAttribute("cri") Criteria cri, Model model, HttpSession session, UserVO vo) {
-			System.out.println("recommend로 이동");
-			log.info("recommend 이동");
+	@GetMapping("/recommend")
+	public String getRecommend(@ModelAttribute("board") BoardVO board, @ModelAttribute("cri") Criteria cri, Model model,
+			HttpSession session, UserVO vo) {
+		System.out.println("recommend로 이동");
+		log.info("recommend 이동");
 
-			List<BoardVO> boardList = service.getList(cri);
-			model.addAttribute("board", boardList);
- 
-			// jsh 0426 nullpointerError떠서 주석처리했습니다
-			//session.setAttribute(SessionNames.LOGIN, user);
-			int total = service.getTotal(cri);
+		List<BoardVO> boardList = service.getList(cri);
+		model.addAttribute("board", boardList);
 
-			log.info("total: " + total);
+		// jsh 0426 nullpointerError떠서 주석처리했습니다
+		// session.setAttribute(SessionNames.LOGIN, user);
+		int total = service.getTotal(cri);
 
-			model.addAttribute("pageMaker", new PageDTO(cri, total));
+		log.info("total: " + total);
 
-			UserVO user = (UserVO)session.getAttribute(SessionNames.LOGIN);
-			String uidKey = user.getUidKey(); 
-			model.addAttribute("user", userService.get(uidKey));
-			
-			List<Integer> interestList = service.getInterest(uidKey);
-			model.addAttribute("interestList", interestList);
-			
-			List<Integer> recommendList = service.getRecommend(uidKey);
-			model.addAttribute("recommendList", recommendList);
-			
-			return "recommend";
-		}
+		model.addAttribute("pageMaker", new PageDTO(cri, total));
+
+		UserVO user = (UserVO) session.getAttribute(SessionNames.LOGIN);
+		String uidKey = user.getUidKey();
+		model.addAttribute("user", userService.get(uidKey));
+
+		List<Integer> interestList = service.getInterest(uidKey);
+		model.addAttribute("interestList", interestList);
+
+		List<Integer> recommendList = service.getRecommend(uidKey);
+		model.addAttribute("recommendList", recommendList);
+
+		return "recommend";
+	}
 
 	// 사용자 작성 글 목록
 	@GetMapping("/write")

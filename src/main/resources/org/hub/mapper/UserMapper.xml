@@ -7,7 +7,7 @@
 	
 		
 	<select id="login" resultType ="org.hub.domain.UserVO">
-		select*from user_tbl where uidkey = #{uidKey} and userPw = #{userPw}
+		select*from user_tbl where uidkey = #{uidKey}
 	</select>
 	
 	<select id="getList" resultType ="org.hub.domain.UserVO">
@@ -42,7 +42,7 @@
 		where uidkey = #{uidKey}
 	</update>
 	
-	<update id="modifyByAuth">
+	<update id="modifyPw">
 		update user_tbl 
 		set userPw = #{userPw} 
 		where uidkey = #{uidKey}

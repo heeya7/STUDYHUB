@@ -90,7 +90,7 @@
 			<div class="container text-center">				
 				<form action="/user/loginPost" role="form" method="post">
 					<input type="text" id="inputId" class="form-control p-3 mt-3" name="uidKey" placeholder="사용자아이디"> 
-					<input type="password" id="inputPassword" class="form-control p-3 mt-1" name="userPw" placeholder="비밀번호">
+					<input type="password" id="inputPassword" class="form-control p-3 mt-1" name="inputPw" placeholder="비밀번호">
 					
 					<div class="mt-2">
 						<div class="text-start cookie-div" style="display:inline">

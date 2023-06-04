@@ -12,6 +12,7 @@ import org.hub.mapper.UserMapper;
 import org.hub.mapper.UserStackMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,12 +32,30 @@ public class UserServiceImpl implements UserSerivce {
 	private UserAttachMapper attachMapper;		
 	
 	@Autowired
-	private UserStackMapper stackMapper;	
+	private UserStackMapper stackMapper;
+	
+	@Inject
+	BCryptPasswordEncoder pwdEncoder;
 	
 	// 일반 로그인
 	@Override
-	public UserVO login(UserVO user) {
-		return mapper.login(user);		
+	public boolean login(UserVO user) {
+		// 1. 해당 아이디를 가진 회원 존재 여부 확인
+		UserVO loginUvo = mapper.login(user);
+		// 2. 입력된 비밀번호와 조회한 비밀번호 일치 여부 확인
+		boolean pwdMatch;
+		if(loginUvo != null) {
+			pwdMatch = pwdEncoder.matches(user.getInputPw(), loginUvo.getUserPw());				
+		} else {
+			pwdMatch = false;
+		}
+		
+		// 로그인 성공
+		if (loginUvo != null && pwdMatch ==true) {
+			return true;			
+		} else { // 로그인 실패
+			return false;
+		}
 	}
 	
 	// 전체 회원 목록
@@ -54,14 +73,20 @@ public class UserServiceImpl implements UserSerivce {
 		log.info("register . . . . . ." + user);
 		String usnsType = user.getUsnsType();
 		
-		log.info(usnsType);
+		log.info(usnsType);		
 		
 		if(usnsType != null) {  // 소셜 회원가입
 			mapper.insertBySns(user);
 		} else if (usnsType == null) { // 일반 회원가입
+			// [ 비밀번호 암호화 ] 1. 유저가 입력한 비밀번호
+			String inputPw = user.getInputPw();
+			// [ 비밀번호 암호화 ] 2. 암호화
+			String userPw = pwdEncoder.encode(inputPw);
+			user.setUserPw(userPw);
 			mapper.insert(user); 
 		}
 		
+		// 프로필 이미지 지정
 		if(user.getAttach() == null) {
 			
 		} else {
@@ -70,6 +95,7 @@ public class UserServiceImpl implements UserSerivce {
 			attachMapper.insert(attach);
 		}
 		
+		// 관심 기술 지정
 		if(user.getSnoList() == null || user.getSnoList().size() <=0) {
 			
 		} else {
@@ -156,12 +182,13 @@ public class UserServiceImpl implements UserSerivce {
 	
 	// 비밀번호 찾기 인증 후 비밀번호 변경
 	@Override
-	public boolean modify(String uidKey, String userPw) {
+	public boolean modify(String uidKey, String inputPw) {		
+		log.info("pwd reset = " + uidKey);				
 		
-		log.info("pwd reset = " + uidKey + ":" + userPw);
+		// 비밀번호 암호화
+		String userPw = pwdEncoder.encode(inputPw);
 		
-		boolean modifyResult = mapper.modifyByAuth(uidKey, userPw)==1;
-
+		boolean modifyResult = mapper.modifyPw(uidKey, userPw)==1;
 		return modifyResult;
 	}
 

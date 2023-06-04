@@ -225,7 +225,7 @@
 				<span class="id_input_re mt-1 text-start">아이디가 중복 되었어요!</span>
 				
 				<div class="mt-3">
-				  <input type="password" class="form-control pw_input p-3 mt-1" name="userPw" placeholder="비밀번호">
+				  <input type="password" class="form-control pw_input p-3 mt-1" name="inputPw" placeholder="비밀번호">
 				</div>
 				
 				<div class="mt-3">

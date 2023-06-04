@@ -9,10 +9,13 @@ import lombok.Data;
 public class UserVO {
 	
 	// 식별키 또는 아이디
-	private String uidKey;
+	private String uidKey;		
 	
-	// 비밀번호
-	private String userPw;	
+	// 회원가입 시 입력한 비밀번호
+	private String inputPw;
+	
+	// 암호화한 비밀번호
+	private String userPw;
 	
 	// 닉네임
 	private String unickName;
