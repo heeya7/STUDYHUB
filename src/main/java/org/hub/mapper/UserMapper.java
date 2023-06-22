@@ -32,5 +32,5 @@ public interface UserMapper {
 		public int delete(String uidKey);
 		
 		// 비밀번호 찾기 => 비밀번호 변경
-		public int modifyByAuth(@Param("uidKey")String uidKey, @Param("userPw")String userPw);
+		public int modifyPw(@Param("uidKey")String uidKey, @Param("userPw")String userPw);
 }
