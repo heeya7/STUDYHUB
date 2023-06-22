@@ -144,6 +144,7 @@
 <script>
 //수정 전 닉네임 저장해두기
 var pre= $('#unickName').val();
+
 //닉네임 빈칸 확인 함수
 function checkNickNull(){
 		var unickName = $('#unickName').val();
@@ -291,16 +292,15 @@ $(document).ready(function(e){
 	    var jobj = $(".uploadResult ul li");
 	    	
 	    if (jobj.find("img").attr("src") === "/resources/Images/profileLogo.png") {
-		     return;
-		}	      	      	      
+		     
+	    } else {
+	    	str += "<input type='hidden' name='attach.fileName' value='"+jobj.data("filename")+"'>";
+		    str += "<input type='hidden' name='attach.uuid' value='"+jobj.data("uuid")+"'>";
+		    str += "<input type='hidden' name='attach.uploadPath' value='"+jobj.data("path")+"'>";
+		    str += "<input type='hidden' name='attach.fileType' value='"+ jobj.data("type")+"'>";
+	    }     	      	      
 	      
-	     console.dir(jobj);	      	      
-	      
-	      str += "<input type='hidden' name='attach.fileName' value='"+jobj.data("filename")+"'>";
-	      str += "<input type='hidden' name='attach.uuid' value='"+jobj.data("uuid")+"'>";
-	      str += "<input type='hidden' name='attach.uploadPath' value='"+jobj.data("path")+"'>";
-	      str += "<input type='hidden' name='attach.fileType' value='"+ jobj.data("type")+"'>";
-
+	     console.dir(jobj);	      	      	      	      
 	    
 	    $("#sno option").filter(":selected").each(function(index) {
 	    	str += "<input type='hidden' name='snoList["+index+"].sno' value='"+$(this).val()+"'>";
@@ -325,7 +325,7 @@ $(document).ready(function(e){
     formObj.submit();
   }); //submit 버튼 눌렸을 때
 
-  // 여기부터 = = = 
+  // 파일 사이즈 확인
   var regex = new RegExp("(.*?)\.(exe|sh|zip|alz)$");
   var maxSize = 5242880; //5MB
   
@@ -415,17 +415,20 @@ $(document).ready(function(e){
  
   
   /* 이미지 제거 버튼을 클릭하면 화면에서만 삭제 (서버 및 복사본은 완료를 눌렀을 때 적용할것임) */
-  $(".photoDelete").on("click", "button", function(e){
+  	$(".photoDelete").on("click", "button", function(e){
 	/* photoDelete 클래스를 가진 요소 내부에서 button 요소를 클릭할 때 이벤트 핸들러 등록 */
 	
-    console.log("delete file");
+	console.log("delete file");
 	
 	if(confirm("이미지를 제거하시겠습니까?")){
 		 var targetLi = $(".uploadResult ul li img");
 		 targetLi.attr("src", "/resources/Images/profileLogo.png");
 	}
     
-   });  
+   });
+  
+  
+
   
 });
 
