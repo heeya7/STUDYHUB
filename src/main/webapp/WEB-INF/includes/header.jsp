@@ -4,21 +4,21 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 	<nav class="navbar_navbar">
-			<a href="/board/main"> 
-				<img class="navbar_logo" src="/resources/Images/SHLogo.png" alt="logo" width=220 height=62>
+			<a href="/board/main"> <img class="navbar_logo"
+				src="/resources/Images/SHLogo.png" alt="logo" width=220 height=62>
 			</a>
 			<div class="navbar_loginElementWrapper">
 				<button class="navbar_postRegister"
 					onclick="location.href='/board/register'">글쓰기</button>
 			
 			
-			<% if (session.getAttribute("loginUser") != null && session.getAttribute("loginAdmin") == null) { %>
+			<% if (session.getAttribute("loginUser") != null) { %>
 				<button class="navbar_postRegister"
 					onclick="location.href='/user/recommend'">추천글</button>			
 				<!-- 사용자 드롭다운 메뉴 -->
 					<div class="dropdown" style="display: inline-block">
 			  			<a class="btn dropdown-toggle" id="dropImage" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-			  				<img width='30px' height='30px' style='border-radius: 50%' src='/resources/Images/profileLogo.png'>
+			  			
 						</a>						
 					   <ul class="dropdown-menu dropdown-menu-end">
 					   	   <li><a class="dropdown-item fs-6 fw-bold mb-2" href="/user/write">내 작성글</a></li>
@@ -27,6 +27,8 @@
 						   <li><a class="dropdown-item fs-6 fw-bold" href="/user/logout">로그아웃</a></li>
 						</ul>			  
 					</div>
+					
+					<%-- <h1>${ loginUser.unickName }</h1> --%>
 					
 			<% } else if (session.getAttribute("loginAdmin") != null) { %>
 				<!-- 관리자 navbar -->
