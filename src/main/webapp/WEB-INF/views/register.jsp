@@ -558,8 +558,6 @@
 	</script>
 	<!-- 관심 기술 태그용 -->
 	<script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/js/multi-select-tag.js"></script>
-	<script src="../../../resources/js/userRegister.js"></script>
-	
 	
 	<script>
 		new MultiSelectTag('snames', {
@@ -572,25 +570,20 @@
 
 		})
 		
-		$(document).ready(function() {		
-			
+		$(document).ready(function() {					
 			// jsh <nav> 태그 사용자 이미지 불러오기
-			(function(){
+			
+			var uidKey = '<c:out value="${ loginUser.uidKey }"/>';
+			console.log(uidKey);
+			var targetA = $("#dropImage");
 				
-				var uidKey = '<c:out value="${ loginUser.uidKey }"/>';
-				console.log(uidKey);
-				var targetA = $("#dropImage");
-				
-				$.getJSON("/user/getAttach", {uidKey:uidKey}, function(attach){
-					console.log(attach);
-					if(attach == null){				
-						 targetA.html("<img width='30px' height='30px' style='border-radius: 50%' src='/resources/Images/profileLogo.png'>");
-					} else {
-							var fileCallPath =  encodeURIComponent( attach.uploadPath+ "/s_"+attach.uuid +"_"+attach.fileName);
-							targetA.html("<img width='40px' height='40px' style='border-radius: 50%' width='40px' src='/display?fileName="+fileCallPath+"'>");
-					}			 
-				}); //end getjson
-			});
+			$.getJSON("/user/getAttach", {uidKey:uidKey}, function(attach){
+				console.log(attach);
+				if(attach != null){
+					var fileCallPath =  encodeURIComponent( attach.uploadPath+ "/s_"+attach.uuid +"_"+attach.fileName);
+					targetA.html("<img width='40px' height='40px' style='border-radius: 50%' width='40px' src='/display?fileName="+fileCallPath+"'>");
+				}		 
+			}); //end getjson
 		});	
 	</script>
 </body>

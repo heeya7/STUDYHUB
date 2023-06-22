@@ -51,7 +51,7 @@ $(document).ready(function() {
 				var str = "";
 				
 				if(attach == null){
-					str += "<li><div><img width='30px' height='30px' aspect-ratio='auto 30/30' display='block' border-radius='50%' object-fit='cover'  src='/resources/Images/profileLogo.png'></div></li>";					
+					str += "<li><div><img width='30px' height='30px' aspect-ratio='auto 30/30' display='block' style='border-radius: 50%' object-fit='cover'  src='/resources/Images/profileLogo.png'></div></li>";					
 				} else {						
 						//image type
 						if(attach.fileType) {
@@ -59,7 +59,7 @@ $(document).ready(function() {
 							
 							str += "<li data-path='"+attach.uploadPath+"' data-uuid='"+attach.uuid+
 							"' data-filename='"+attach.fileName+"' data-type='"+attach.fileType+"' ><div>";
-							str += "<img width='30px' height='30px' aspect-ratio='auto 30/30' display='block' border-radius='50%' object-fit='cover'  src='/display?fileName="+fileCallPath+"'>";
+							str += "<img width='30px' height='30px' aspect-ratio='auto 30/30' display='block' style='border-radius: 50%' object-fit='cover'  src='/display?fileName="+fileCallPath+"'>";
 							str += "</div>";
 							str += "</li>";
 						} 				
@@ -78,12 +78,10 @@ $(document).ready(function() {
 		
 		$.getJSON("/user/getAttach", {uidKey:uidKey}, function(attach){
 			console.log(attach);
-			if(attach == null){				
-				 targetA.html("<img width='30px' height='30px' style='border-radius: 50%' src='/resources/Images/profileLogo.png'>");
-			} else {
-					var fileCallPath =  encodeURIComponent( attach.uploadPath+ "/s_"+attach.uuid +"_"+attach.fileName);
-					targetA.html("<img width='40px' height='40px' style='border-radius: 50%' width='40px' src='/display?fileName="+fileCallPath+"'>");
-			}			 
+			if(attach != null){
+				var fileCallPath =  encodeURIComponent( attach.uploadPath+ "/s_"+attach.uuid +"_"+attach.fileName);
+				targetA.html("<img width='40px' height='40px' style='border-radius: 50%' width='40px' src='/display?fileName="+fileCallPath+"'>");
+			}		 
 		}); //end getjson						
 						
 		
