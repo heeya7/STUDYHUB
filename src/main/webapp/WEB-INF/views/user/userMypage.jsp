@@ -350,16 +350,13 @@ $(document).ready(function(e){
     
     var inputFile = $("input[name='uploadFile']");
     
-    var files = inputFile[0].files;
+    var files = inputFile.prop("files");
     
-    for(var i = 0; i < files.length; i++){
-
-      if(!checkExtension(files[i].name, files[i].size) ){
+    if(!checkExtension(files[0].name, files[0].size) ){
         return false;
-      }
-      formData.append("uploadFile", files[i]);
-      
     }
+     
+    formData.append("uploadFile", files[0]);   
     
     $.ajax({
       url: '/uploadAjaxAction',
@@ -377,10 +374,10 @@ $(document).ready(function(e){
     
   });  
   
-  function showUploadResult(uploadResultArr){
+  function showUploadResult(uploadResult){
 	
 	/* 업로드된 파일이 없으면 함수를 실행하지 않고 종료 */
-    if(!uploadResultArr || uploadResultArr.length == 0){ return; }
+	  if(uploadResult == null){ return; }
     
 	/* 업로드된 파일이 있으면, 스터디허브 이미지 삭제 */
 	$(".uploadResult ul li #photo").remove();
@@ -392,27 +389,23 @@ $(document).ready(function(e){
     
     var deleteBtn = $("#photoDeleteBtn");
     
-    $(uploadResultArr).each(function(i, obj){          
+    var obj = uploadResult;             
 		
-		if(obj.image){
-			var fileCallPath =  encodeURIComponent( obj.uploadPath+ "/s_"+obj.uuid +"_"+obj.fileName);
-			str += "<li data-path='"+obj.uploadPath+"'";
-			str +=" data-uuid='"+obj.uuid+"' data-filename='"+obj.fileName+"' data-type='"+obj.image+"'"
-			str +" ><div>";
-			str += "<span></span>";
-			str += "<img id='photo' src='/display?fileName="+fileCallPath+"' >";
-			str += "</div>";
-			str +"</li>";
-			deleteBtn.attr("data-file",fileCallPath);
-		}
-		
-    });
+	if(obj.image){
+		var fileCallPath =  encodeURIComponent( obj.uploadPath+ "/s_"+obj.uuid +"_"+obj.fileName);
+		str += "<li data-path='"+obj.uploadPath+"'";
+		str +=" data-uuid='"+obj.uuid+"' data-filename='"+obj.fileName+"' data-type='"+obj.image+"'"
+		str +" ><div>";
+		str += "<span></span>";
+		str += "<img id='photo' src='/display?fileName="+fileCallPath+"' >";
+		str += "</div>";
+		str +"</li>";
+		deleteBtn.attr("data-file",fileCallPath);				
+    };
     
-    uploadUL.append(str);
+    uploadUL.append(str);	
 	
-	
-  }
- 
+  } 
   
   /* 이미지 제거 버튼을 클릭하면 화면에서만 삭제 (서버 및 복사본은 완료를 눌렀을 때 적용할것임) */
   	$(".photoDelete").on("click", "button", function(e){

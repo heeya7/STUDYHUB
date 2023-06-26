@@ -186,6 +186,8 @@
     
    });
 
-
+  $("#back2step").click(function() {
+    window.location.href = "/board/main";
+  });
   
 });

@@ -43,7 +43,7 @@
 	<!-- 부트스트랩 https://getbootstrap.kr/docs/5.2/getting-started/introduction/ -->
 	<div class="container">
 		<form class="form-login" action="/admin/login" method="post">
-			<a href="/main">
+			<a href="/board/main">
 				<img class="mb-5 rounded mx-auto d-block" src="/resources/Images/SHLogo.png" alt="StudyHybLogo" width="350" height=auto>
 			</a>
 			<!-- <h3 class="welcome text-center fs-4 fw-bold">StudyHub에 오신 것을 환영합니다!</h3> -->

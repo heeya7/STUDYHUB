@@ -199,7 +199,8 @@ public class UserController {
 		
 		// 로그인 성공
 		if (loginResult) {
-			model.addAttribute("user", user);			
+			UserVO loginUser = userService.get(user.getUidKey());
+			model.addAttribute("user", loginUser);			
 		} else { // 로그인 실패
 			model.addAttribute("loginResult", "아이디 또는 비밀번호가 일치하지 않습니다.");
 		}
@@ -284,6 +285,7 @@ public class UserController {
 			return "/user/snsJoin";
 		} else {
 			// 4.2. 존재시 유저정보 세션에 강제로 담기 및 메인페이지 이동
+			log.info(" jsh 소셜 로그인 후 세션에 담기는 user 정보 확인 = = = = = = : " + user);
 			session.setAttribute(SessionNames.LOGIN, user);
 			return "redirect:/board/main";
 		}

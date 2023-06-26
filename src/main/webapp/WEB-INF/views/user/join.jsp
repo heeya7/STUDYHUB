@@ -87,28 +87,36 @@
 			margin-right: 40px;
 		}
 		
-		/* 중복아이디 존재하는 경우 */
-		.id_input_re {
+		/* 아이디 */
+		.id_input_re, .id_input_none {
 			display : none;
 			color: #e06034;
 			font-weight : bold;
 			font-size:15px;
 		}
 		
-		/* 비밀번호 확인 일치하지 않는 경우 */
-		.pwck_input_re {
+		/* 비밀번호 */
+		.pwck_input_re, .pw_input_none {
 			display : none;
 			color: #e06034;
 			font-weight : bold;
 			font-size: 15px;
 		}
 		
-		/* 중복닉네임 존재하는 경우*/
-		.nickname_input_re {
+		/* 닉네임 */
+		.nickname_input_re, .nickname_input_none {
 			display : none;
 			color: #e06034;
 			font-weight : bold;
 			font-size:15px;		
+		}
+		
+		/* 이메일 */ 
+		.email_input_re {
+			display : none;
+			color: #e06034;
+			font-weight : bold;
+			font-size:15px;	
 		}
 		
 		#uploadResult {
@@ -212,7 +220,7 @@
 	
 		
 			<!-- 로고 - 메인페이지 연결 -->
-			<a href="/main">
+			<a href="/board/main">
 				<img class="mb-3 rounded mx-auto d-block" src="/resources/Images/norabbitlogo.png" alt="StudyHubLogo" width="320" height=auto>				
 			</a>
 			<h1 class="h4 mb-3 text-center fw-bold">StudyHub에 오신 것을 환영합니다!</h1>
@@ -222,27 +230,34 @@
 				  <input type="text" class="form-control id_input p-3 mt-3" name="uidKey" placeholder="사용자아이디">			  
 				</div>
 				
+				<span class="id_input_none mt-1 text-start">사용자 아이디를 입력 해주세요!</span>
 				<span class="id_input_re mt-1 text-start">아이디가 중복 되었어요!</span>
+				
 				
 				<div class="mt-3">
 				  <input type="password" class="form-control pw_input p-3 mt-1" name="inputPw" placeholder="비밀번호">
 				</div>
 				
-				<div class="mt-3">
-				  <input type="password" class="form-control pwck_input p-3" placeholder="비밀번호확인">
-				</div>
+				<span class="pw_input_none mt-1 text-start">비밀번호를 입력 해주세요!</span>
 				
+				<div class="mt-3">
+				  <input type="password" class="form-control pwck_input p-3" name="inputPwCk" placeholder="비밀번호확인">
+				</div>
+
 				<span class="pwck_input_re mt-1 text-start">비밀번호가 일치하지 않아요!</span>
 				
 				<div class="mt-3">
 				  <input type="text" class="form-control nickname_input p-3" name="unickName" placeholder="닉네임">
 				</div>
 				
+				<span class="nickname_input_none mt-1 text-start">닉네임을 입력 해주세요!</span>
 				<span class="nickname_input_re mt-1 text-start">닉네임이 중복 되었어요!</span>
 				
 				<div class="mt-3">
 				  <input type="email" class="form-control email_input p-3" name="uemail" placeholder="이메일">
 				</div>
+				
+				<span class="email_input_re mt-1 text-start">올바른 이메일 형식을 입력 해주세요!</span>
 				
 				<!-- 관심 태그 선택 시작-->
 				<div class="mt-4">
@@ -297,7 +312,7 @@
 							<label class="custom-file-input-wrapper" for="customFile">
 								<span class="custom-file-input-label">이미지 선택</span> <input
 								type="file" class="custom-file-input" id="customFile"
-								name='uploadFile' multiple>
+								name='uploadFile'>
 							</label>
 						</div>
 						<div class="photoDelete">
@@ -346,207 +361,191 @@
 	var idCheck = false;            // 아이디
 	var idckCheck = false;          // 아이디 중복 검사
 	var pwCheck = false;            // 비번
-	var pwckCheck = false;          // 비번 확인
 	var pwckcorCheck = false;       // 비번 확인 일치 확인
 	var nameCheck = false;          // 닉네임
 	var nameckCheck = false;        // 닉네임 중복 검사
-	var emailCheck = false;         // 이메일
+	var emailCheck = false;         // 이메일 검사
 	var flag=false; //이미지 파일 선택 여부
+	
+	// 이메일 RFC 5322 형식
+	var regex = new RegExp("([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*|\"\(\[\]!#-[^-~ \t]|(\\[\t -~]))+\")@([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*|\[[\t -Z^-~]*])");
 	
 	$(document).ready(function(){
 		
-		//회원가입 버튼(회원가입 기능 작동)
-		$("button[type='submit']").click(function(){
+		/* 아이디 입력 여부 검사 */
+		$('.id_input').focusout(function(){  // 해당 엘리먼트를 벗어나는 경우 이벤트 발생
 			
-			/* 입력값 변수 */
-			var id = $('.id_input').val();                // id 입력란
-			var pw = $('.pw_input').val();                // 비밀번호 입력란
-			var pwck = $('.pwck_input').val();            // 비밀번호 확인 입력란
+			var id = $('.id_input').val(); // id 입력란
+			
+			if(id == "") {
+				$('.id_input_none').css('display', 'block');
+				idCheck = false;
+			} else {
+				$('.id_input_none').css('display', 'none');
+				idCheck = true;
+			}
+			
+		});
+		
+		/* 아이디 중복검사 */
+		$('.id_input').focusout(function(){  // input 변화 실시간 감지
+			console.log("keyup 테스트");
+			
+			var uidKey = $('.id_input').val();	// .id_input에 입력되는 값
+			var data = {uidKey : uidKey};		// '컨트롤에 넘길 데이터 이름':'데이터(.id_input에 입력되는 값)'
+			
+			$.ajax({
+				type : "post",
+				url : "/user/userIdChk",
+				data : data,
+				success : function(result){
+					console.log("성공 여부" + result);
+					if(result != 'fail'){
+						$('.id_input_re').css("display", "none");
+						idckCheck = true;  // 아이디 중복이 없는 경우
+					} else {
+						$('.id_input_re').css("display","block");
+						idckCheck = false;  // 아이디 중복된 경우
+					}
+				}
+			});
+		});
+		
+		/* 비밀번호 입력 여부 검사 */
+		$('.pw_input').focusout(function(){  // 해당 엘리먼트를 벗어나는 경우 이벤트 발생
+			
+			var pw = $('.pw_input').val(); // 비밀번호 입력란
+			
+			if(pw == "") {
+				$('.pw_input_none').css('display', 'block');
+				pwCheck = false;
+			} else {
+				$('.pw_input_none').css('display', 'none');
+				pwCheck = true;
+			}
+			
+		});		
+		
+		/* 비밀번호 확인 일치 검사 */
+		$('.pwck_input').focusout(function(){  // 해당 엘리먼트를 벗어나는 경우 이벤트 발생
+			
+			var pw = $('.pw_input').val();
+			var pwck = $('.pwck_input').val();
+			
+			if(pw == pwck){
+				$('.pwck_input_re').css('display','none');
+				pwckcorCheck = true;
+			}else{
+				$('.pwck_input_re').css('display','block');
+				pwckcorCheck = false;
+			}
+			
+		});
+		
+		
+		/* 이메일 입력 여부 및 형식 유효성 검사 */
+		$('.email_input').focusout(function(){  // 해당 엘리먼트를 벗어나는 경우 이벤트 발생
+
+			var email = $('.email_input').val(); // 이메일 입력란
+			
+			if(email == "" || !(regex.test(email))) {
+				$('.email_input_re').css('display', 'block');
+				emailCheck = false;
+			} else {
+				$('.email_input_re').css('display', 'none');
+				emailCheck = true;
+			}
+			
+		});
+		
+		/* 닉네임 입력 여부 검사 */
+		$('.nickname_input').focusout(function(){  // 해당 엘리먼트를 벗어나는 경우 이벤트 발생
+
 			var name = $('.nickname_input').val();            // 닉네임 입력란
-			var email = $('.email_input').val();           // 이메일 입력란
-			
-			/* 이메일 유효성 검사 */
-	        if(email == ""){
-	        	toastr.options = {
-	        			closeButton: true,
-		    			"progressBar": true,
-		    			"timeOut": 4000
-		    			};
-	        	toastr.warning('이메일을 입력해 주세요!');
-	            emailCheck = false;
-	        }else{
-	            emailCheck = true;
-	        }
-			
-	        /* 닉네임 유효성 검사 */
-	        if(name == ""){
-	        	toastr.options = {
-	        			closeButton: true,
-		    			"progressBar": true,
-			    		"timeOut": 4000
-			    		};
-	        	toastr.warning('이름을 입력해 주세요!');
-	            nameCheck = false;
-	        }else{
-	            nameCheck = true;
-	        }
-	        
-	        /* 비밀번호 확인 유효성 검사 */
-	        if(pwck == ""){
-	        	toastr.options = {
-	        			closeButton: true,
-		    			"progressBar": true,
-		    			"timeOut": 4000
-		    			};
-	        	toastr.warning('비밀번호 확인을 입력해 주세요!');
-	            pwckCheck = false;
-	        }else{
-	            pwckCheck = true;
-	        }
-			
-	        /* 비밀번호 유효성 검사 */
-	        if(pw == ""){
-	        	toastr.options = {
-	        			closeButton: true,
-		    			"progressBar": true,
-		    			"timeOut": 4000
-		    			};
-	        	toastr.warning('비밀번호를 입력해 주세요!');
-	            pwCheck = false;
-	        }else{
-	            pwCheck = true;
-	        }
-	        
-	        /* 아이디 유효성검사 */
-	        if(id == ""){
-	        	toastr.options = {
-	        			closeButton: true,
-		    			"progressBar": true,
-		    			"timeOut": 4000
-		    			};
-	        	toastr.warning('사용자아이디를 입력해 주세요!');
-	            idCheck = false;
-	        }else{
-	            idCheck = true;
-	        }
-	        
- 			/* 관심 스택 정보 저장 */			
-	        var str = "";
-	        $('#sno option').filter(':selected').each(function(index) {
-	        	str += "<input type='hidden' name='snoList["+index+"].sno' value='"+$(this).val()+"'>";	        
-	        });
-	        
-	        $(".form-join").append(str);	        
 
-
-		});
-	});
-	
-	/* 아이디 중복검사 */
-	$('.id_input').on("propertychange change keyup paste input", function(){  // input 변화 실시간 감지
-		console.log("keyup 테스트");
-		
-		var uidKey = $('.id_input').val();	// .id_input에 입력되는 값
-		var data = {uidKey : uidKey};		// '컨트롤에 넘길 데이터 이름':'데이터(.id_input에 입력되는 값)'
-		
-		$.ajax({
-			type : "post",
-			url : "/user/userIdChk",
-			data : data,
-			success : function(result){
-				console.log("성공 여부" + result);
-				if(result != 'fail'){
-					$('.id_input_re').css("display", "none");
-					idckCheck = true;  // 아이디 중복이 없는 경우
-				} else {
-					$('.id_input_re').css("display","block");
-					idckCheck = false;  // 아이디 중복된 경우
-				}
+			if(name == "") {
+				$('.nickname_input_none').css('display', 'block');
+				nameCheck = false;
+			} else {
+				$('.nickname_input_none').css('display', 'none');
+				nameCheck = true;
 			}
+			
 		});
-	});
-	
-	/* 비밀번호 확인 일치 검사 */
-	$('.pwck_input').focusout(function(){  // 해당 엘리먼트를 벗어나는 경우 이벤트 발생
 		
-		var pw = $('.pw_input').val();
-		var pwck = $('.pwck_input').val();
-		
-		if(pw == pwck){
-			$('.pwck_input_re').css('display','none');
-			pwckcorCheck = true;
-		}else{
-			$('.pwck_input_re').css('display','block');
-			pwckcorCheck = false;
-		}
-		
-	});
-	
-	/* 닉네임 중복 검사 */
-	$('.nickname_input').on("propertychange change keyup paste input", function(){  // input 변화 실시간 감지
-		console.log("keyup 테스트");
-		
-		var unickName = $('.nickname_input').val();	// .id_input에 입력되는 값
-		var data = {unickName : unickName};		// '컨트롤에 넘길 데이터 이름':'데이터(.id_input에 입력되는 값)'
-		
-		$.ajax({
-			type : "post",
-			url : "/user/unickNameCheck",
-			data : data,
-			success : function(result){
-				console.log("성공 여부" + result);
-				if(result != 'fail'){
-					$('.nickname_input_re').css("display", "none");
-					nameckCheck = true;  // 닉네임 중복이 없는 경우
-				} else {
-					$('.nickname_input_re').css("display","block");
-					nameckCheck = false;  // 닉네임 중복된 경우
+		/* 닉네임 중복 검사 */
+		$('.nickname_input').focusout(function(){  // 해당 엘리먼트를 벗어나는 경우 이벤트 발생
+			console.log("keyup 테스트");
+			
+			var unickName = $('.nickname_input').val();	// .id_input에 입력되는 값
+			var data = {unickName : unickName};		// '컨트롤에 넘길 데이터 이름':'데이터(.id_input에 입력되는 값)'
+			
+			$.ajax({
+				type : "post",
+				url : "/user/unickNameCheck",
+				data : data,
+				success : function(result){
+					console.log("성공 여부" + result);
+					if(result != 'fail'){
+						$('.nickname_input_re').css("display", "none");
+						nameckCheck = true;  // 닉네임 중복이 없는 경우
+					} else {
+						$('.nickname_input_re').css("display","block");
+						nameckCheck = false;  // 닉네임 중복된 경우
+					}
 				}
-			}
-		});
+			});
 
+		});
+		
 	});
 	
-	// 프로필 이미지 선택 관련 함수
-	$(document).ready(function(e){
-  
- 	 $("button[type='submit']").on("click", function(e){
-    
-	    e.preventDefault();
+	//회원가입 버튼(회원가입 기능 작동)
+	$("button[type='submit']").on("click", function(e){					
+  		
+		e.preventDefault();
+		
+		console.log("submit clicked");
+		
+		var istr = "";
 	    
-	 	console.log("submit clicked");	    	 		 	
-	 	
-	    var istr = "";
-	     if(flag) {		    		      
-		      	var jobj = $(".uploadResult ul li");
-		      
-			      console.dir(jobj);
-			      console.log("-------------------------");
-			      console.log(jobj.data("filename"));
+		/* 선택한 프로필 이미지 form에 저장 */
+		if(flag) {		    		      
+			var jobj = $(".uploadResult ul li");		      
 			      
-			      
-			      istr += "<input type='hidden' name='attach.fileName' value='"+jobj.data("filename")+"'>";
-			      istr += "<input type='hidden' name='attach.uuid' value='"+jobj.data("uuid")+"'>";
-			      istr += "<input type='hidden' name='attach.uploadPath' value='"+jobj.data("path")+"'>";
-			      istr += "<input type='hidden' name='attach.fileType' value='"+ jobj.data("type")+"'>";		      
+			istr += "<input type='hidden' name='attach.fileName' value='"+jobj.data("filename")+"'>";
+			istr += "<input type='hidden' name='attach.uuid' value='"+jobj.data("uuid")+"'>";
+			istr += "<input type='hidden' name='attach.uploadPath' value='"+jobj.data("path")+"'>";
+			istr += "<input type='hidden' name='attach.fileType' value='"+ jobj.data("type")+"'>";		      
 		 }
+		
+		$(".form-join").append(istr);
+		
+		/* 관심 스택 정보 form에 저장 */			
+	    var str = "";
 	    
-	    console.log(istr);      		        
-	    
-	    $(".form-join").append(istr);
+		$('#sno option').filter(':selected').each(function(index) {
+	    	str += "<input type='hidden' name='snoList["+index+"].sno' value='"+$(this).val()+"'>";	        
+	    });
+	        
+	    $(".form-join").append(str);
 	    
 	    /* 회원가입 최종 유효성 검사 후 전송 */
-	    if(idCheck && idckCheck && pwCheck && pwckCheck && pwckcorCheck && nameCheck && nameckCheck && emailCheck){
+	    if(idCheck && idckCheck && pwCheck && pwckcorCheck && nameCheck && nameckCheck && emailCheck){
 	    	$(".form-join").submit();
+	    } else {
+	    	alert("모든 항목을 올바르게 입력해주세요.");
 	    }
-  });
 
+	});		
   
-  var regex = new RegExp("(.*?)\.(exe|sh|zip|alz)$");
-  var maxSize = 5242880; //5MB
-  
+
+  /* 파일 크기 확인 함수 */
   function checkExtension(fileName, fileSize){
     
+	var regex = new RegExp("(.*?)\.(exe|sh|zip|alz)$");
+	var maxSize = 5242880; //5MB
+	
     if(fileSize >= maxSize){
       alert("파일 사이즈 초과");
       return false;
@@ -566,16 +565,15 @@
     
     var inputFile = $("input[name='uploadFile']");
     
-    var files = inputFile[0].files;
+    console.log(inputFile);
     
-    for(var i = 0; i < files.length; i++){
-
-      if(!checkExtension(files[i].name, files[i].size) ){
+    var files = inputFile.prop("files");
+    
+    if(!checkExtension(files[0].name, files[0].size) ){
         return false;
-      }
-      formData.append("uploadFile", files[i]);
-      
     }
+    
+    formData.append("uploadFile", files[0]);
     
     $.ajax({
       url: '/uploadAjaxAction',
@@ -593,10 +591,10 @@
     flag=true;
   });  
   
-  function showUploadResult(uploadResultArr){
+  function showUploadResult(uploadResult){
 	
 	/* 업로드된 파일이 없으면 함수를 실행하지 않고 종료 */
-    if(!uploadResultArr || uploadResultArr.length == 0){ return; }
+	if(uploadResult == null){ return; }
     
 	/* 업로드된 파일이 있으면, 스터디허브 이미지 삭제 */
 	$(".uploadResult ul li #photo").remove();
@@ -608,24 +606,21 @@
     
     var deleteBtn = $("#photoDeleteBtn");
     
-    $(uploadResultArr).each(function(i, obj){          
+    var obj = uploadResult;            
 		
-		if(obj.image){
-			var fileCallPath =  encodeURIComponent( obj.uploadPath+ "/s_"+obj.uuid +"_"+obj.fileName);
-			ustr += "<li class='text-end' data-path='"+obj.uploadPath+"'";
-			ustr +=" data-uuid='"+obj.uuid+"' data-filename='"+obj.fileName+"' data-type='"+obj.image+"'"
-			ustr +" ><div>";
-			ustr += "<span></span>";
-			ustr += "<img id='photo' src='/display?fileName="+fileCallPath+"' >";
-			ustr += "</div>";
-			ustr +"</li>";
-			deleteBtn.attr("data-file",fileCallPath);
-		}
-		
-    });
+	if(obj.image){
+		var fileCallPath =  encodeURIComponent( obj.uploadPath+ "/s_"+obj.uuid +"_"+obj.fileName);
+		ustr += "<li class='text-end' data-path='"+obj.uploadPath+"'";
+		ustr +=" data-uuid='"+obj.uuid+"' data-filename='"+obj.fileName+"' data-type='"+obj.image+"'"
+		ustr +" ><div>";
+		ustr += "<span></span>";
+		ustr += "<img id='photo' src='/display?fileName="+fileCallPath+"' >";
+		ustr += "</div>";
+		ustr +"</li>";
+		deleteBtn.attr("data-file",fileCallPath);
+	}		    
     
-    uploadUL.append(ustr);
-	
+    uploadUL.append(ustr);	
 	
   }
   
@@ -658,10 +653,8 @@
     
    });
 
-
-  
-});
 	</script>
+	
 	<script>
 		new MultiSelectTag('sno', {
 	        rounded: true,    // default true

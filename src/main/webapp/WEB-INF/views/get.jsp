@@ -64,8 +64,8 @@
 			        <div class="studyContent_user">
 					<div id="uploadResult">
 					<div class='uploadResult'>
-					<ul>
-						<li id="photo"></li>
+					<ul id="writerImage">
+						<img width='30px' height='30px' style='border-radius: 50%' src='/resources/Images/profileLogo.png'>
 					</ul>													
 				</div>
 				
@@ -271,361 +271,358 @@
 		<!--  reply test -->
 		<div><c:out value="${reply }"/></div>
 	</body>
-<!-- body 끝 -->
-
-<!-- bootstrap js -->
-<script
-	src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
-	integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
-	crossorigin="anonymous">
-</script>
-<!-- 댓글 js -->
-<script type="text/javascript" src="/resources/js/reply.js"></script>
-<script>
-uidkeys.push('${board.uidkey}');
-var bnoValue = '<c:out value="${board.bno}"/>'; // bno값 불러오기
-var unameValue = '<c:out value="${loginUser.unickName}" />'; // uname 값 불러오기
-var adminValue = '<c:out value="${loginAdmin.adminId}" />' // admin 값 불러오기
-var replyUL = $(".chat"); 
-var userImages = {};
-
-$(document).ready(function() {
+	<!-- body 끝 -->
 	
-	(function() { // 즉시 실행 함수
-		// uidkey는 글마다 다르므로 배열로 저장해서 반복문으로 처리 
-		uidkeys.forEach(function(uidKey, index) {
-			$.getJSON("/user/getAttach", {uidKey:uidKey}, function(attach) {
-				console.log(attach);
-				var str = "";
+	<!-- jquery update -->
+	<script src="https://code.jquery.com/jquery-3.6.4.js"
+		integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E="
+		crossorigin="anonymous">
+	</script>
+
+	<!-- bootstrap js -->
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+		crossorigin="anonymous">
+	</script>
+	
+	<!-- 댓글 js -->
+	<script type="text/javascript" src="/resources/js/reply.js"></script>
+	<script>
+	uidkeys.push('${board.uidkey}');
+	var bnoValue = '<c:out value="${board.bno}"/>'; // bno값 불러오기
+	var unameValue = '<c:out value="${loginUser.unickName}" />'; // uname 값 불러오기
+	var adminValue = '<c:out value="${loginAdmin.adminId}" />' // admin 값 불러오기
+	var replyUL = $(".chat"); 
+	
+	$(document).ready(function() {
+		
+		// jsh 게시글 작성자 이미지 불러오기
+		(function() { // 즉시 실행 함수
+			
+			var uidKey = '<c:out value="${ board.uidkey }"/>'; //작성자 아이디
+	
+			var writerImg = $("#writerImage");
+			
+			$.getJSON("/user/getAttach", {uidKey:uidKey}, function(attach){
 				
-				if(attach == null){
-					str += "<li><div><img width='30px' height='30px' aspect-ratio='auto 30/30' display='block' border-radius='50%' object-fit='cover'  src='/resources/Images/profileLogo.png'></div></li>";					
-				} else {						
-						//image type
-						if(attach.fileType) {
-							var fileCallPath = encodeURIComponent( attach.uploadPath+ "/s_" + attach.uuid +"_"+attach.fileName);
-							
-							str += "<li data-path='"+attach.uploadPath+"' data-uuid='"+attach.uuid+
-							"' data-filename='"+attach.fileName+"' data-type='"+attach.fileType+"' ><div>";
-							str += "<img width='30px' height='30px' aspect-ratio='auto 30/30' display='block' border-radius='50%' object-fit='cover'  src='/display?fileName="+fileCallPath+"'>";
-							str += "</div>";
-							str += "</li>";
-						} 				
-				}
-				$(".uploadResult ul").eq(index).html(str);
-			}); // end getjson
-		});
-	})();// end function
-	
-	// jsh <nav> 태그 사용자 이미지 불러오기
-	(function(){
+				if(attach != null){				
+					var fileCallPath =  encodeURIComponent( attach.uploadPath+ "/s_"+attach.uuid +"_"+attach.fileName);
+					writerImg.html("<img width='40px' height='40px' style='border-radius: 50%' width='40px' src='/display?fileName="+fileCallPath+"'>");
+				} 
+				
+			}); //end getjson
+			
+		})();// end function
 		
-		var uidKey = '<c:out value="${ loginUser.uidKey }"/>';
-		console.log(uidKey);
-		var targetA = $("#dropImage");
-		
-		$.getJSON("/user/getAttach", {uidKey:uidKey}, function(attach){
-			console.log(attach);
-			if(attach == null){				
-				 targetA.html("<img width='30px' height='30px' style='border-radius: 50%' src='/resources/Images/profileLogo.png'>");
-			} else {
+		// jsh <nav> 태그 사용자 이미지 불러오기
+		(function(){
+			
+			var uidKey = '<c:out value="${ loginUser.uidKey }"/>';
+			console.log(uidKey);
+			var targetA = $("#dropImage");
+			
+			$.getJSON("/user/getAttach", {uidKey:uidKey}, function(attach){
+				console.log(attach);
+				if(attach != null){				
 					var fileCallPath =  encodeURIComponent( attach.uploadPath+ "/s_"+attach.uuid +"_"+attach.fileName);
 					targetA.html("<img width='40px' height='40px' style='border-radius: 50%' width='40px' src='/display?fileName="+fileCallPath+"'>");
-			}			 
-		}); //end getjson						
-						
-		
-	})();//end function		
-
-}); // end ready	
-		
+				} 		 
+			}); //end getjson												
+			
+		})();//end function		
 	
-</script>
-
-<script>
-// 뒤로가기 화살표 눌렀을 때 함수
-function goBack() {
-	  window.history.back();
+	}); // end ready	
+			
+		
+	</script>
+	
+	<script>
+	// 뒤로가기 화살표 눌렀을 때 함수
+	function goBack() {
+		  window.history.back();
+		}
+	// 수정 눌렀을 때 폼 보여주기 함수 
+	function showEditCommentForm(rno) {
+	  var commentItem = document.querySelector("[data-rno='" + rno + "']");
+	  var commentContent = commentItem.querySelector(".commentItem_commentContent");
+	  var commentText = commentContent.querySelector("p").textContent;
+	  var editInput = commentItem.querySelector(".commentItem_modifyInput");
+	  var commentInputButton = commentItem.querySelector(".commentItem_commentInputButton");
+	
+	  editInput.value = commentText;
+	  editInput.setAttribute("type", "text");
+	  commentInputButton.style.display = "flex";
+	
+	  // 수정 취소 버튼
+	  var canBtn = commentItem.querySelector(".commentItem_buttonCancel");
+	  canBtn.addEventListener("click", function() {
+	    editInput.style.display = "none";
+	    commentInputButton.style.display = "none";
+	  });
+	
+	  // 수정 완료 버튼
+	  var sucBtn = commentItem.querySelector(".commentItem_buttonComplete");
+	  sucBtn.addEventListener("click", function() {
+	    var editedComment = editInput.value;
+	    var rno = commentItem.getAttribute("data-rno");
+	    var updatedReply = { rno: rno, reply: editedComment };
+	    replyService.update(updatedReply, function (result) {
+	      alert(result);
+	      // 수정된 내용으로 화면 갱신
+	      commentContent.innerHTML = "<p class='commentItem_commentContent'>" + editedComment + "</p>";
+	      // 댓글 수정 입력 폼과 완료/취소 버튼 숨김
+	      editInput.style.display = "none";
+	      commentInputButton.style.display = "none";
+	    }); // end replyService.update
+	  });// end function sucBtn.onClick
 	}
-// 수정 눌렀을 때 폼 보여주기 함수 
-function showEditCommentForm(rno) {
-  var commentItem = document.querySelector("[data-rno='" + rno + "']");
-  var commentContent = commentItem.querySelector(".commentItem_commentContent");
-  var commentText = commentContent.querySelector("p").textContent;
-  var editInput = commentItem.querySelector(".commentItem_modifyInput");
-  var commentInputButton = commentItem.querySelector(".commentItem_commentInputButton_");
-
-  editInput.value = commentText;
-  editInput.setAttribute("type", "text");
-  commentInputButton.style.display = "flex";
-
-  // 수정 취소 버튼
-  var canBtn = commentItem.querySelector(".commentItem_buttonCancel");
-  canBtn.addEventListener("click", function() {
-    editInput.style.display = "none";
-    commentInputButton.style.display = "none";
-  });
-
-  // 수정 완료 버튼
-  var sucBtn = commentItem.querySelector(".commentItem_buttonComplete");
-  sucBtn.addEventListener("click", function() {
-    var editedComment = editInput.value;
-    var rno = commentItem.getAttribute("data-rno");
-    var updatedReply = { rno: rno, reply: editedComment };
-    replyService.update(updatedReply, function (result) {
-      alert(result);
-      // 수정된 내용으로 화면 갱신
-      commentContent.innerHTML = "<p class='commentItem_commentContent'>" + editedComment + "</p>";
-      // 댓글 수정 입력 폼과 완료/취소 버튼 숨김
-      editInput.style.display = "none";
-      commentInputButton.style.display = "none";
-    }); // end replyService.update
-  });// end function sucBtn.onClick
-}
-
-// 댓글 수정 버튼 눌렀을 때
-$('.commentItem_buttonModify').on("click", function() {
-  var rno = $(this).closest('.commentItem_commentContainer').attr("data-rno");
-  showEditCommentForm(rno);
-});
-
-
-
-	 
-	 // kdh 댓글 삭제
-	 function deleteReply(rno) {
-		// 댓글 항목(li) 선택
-	    var commentItem = $(this).closest(".commentItem_commentContainer");
-	 	
-		// 댓글 삭제 요청
-   		replyService.remove(rno, function(result){
-   	        
-   	      alert(result);
-   	   	  location.reload();
-   	      
-   	  });//end ReplyService
-	 }
-	 
-	$(document).ready(function() {
-		showList(1);
-		    
-		// 목록 보여주는 함수
-		function showList(page){ 
-			console.log("show list " + page);
-		    
-			// reply.js에 추가되어있는 replyService함수 호출
-		    replyService.getList({bno:bnoValue,page: page|| 1 }, function(replyCnt, list) {
-		      
-			    console.log("replyCnt: "+ replyCnt );
-			    console.log("list: " + list);
-			    console.log(list);
+	
+	// 댓글 수정 버튼 눌렀을 때
+	$('.commentItem_buttonModify').on("click", function() {
+	  var rno = $(this).closest('.commentItem_commentContainer').attr("data-rno");
+	  commentInputButton.style.display = "flex";
+	  showEditCommentForm(rno);
+	});
+	
+	
+	
+		 
+		 // kdh 댓글 삭제
+		 function deleteReply(rno) {
+			// 댓글 항목(li) 선택
+		    var commentItem = $(this).closest(".commentItem_commentContainer");
+		 	
+			// 댓글 삭제 요청
+	   		replyService.remove(rno, function(result){
+	   	        
+	   	      alert(result);
+	   	   	  location.reload();
+	   	      
+	   	  });//end ReplyService
+		 }
+		 
+		$(document).ready(function() {
+			
+			showList(1);
 			    
-			    if(page == -1){
-			      pageNum = Math.ceil(replyCnt/10.0);
-			      showList(pageNum);
-			      return;
-			    }
-		      
-			     var str="";
-			     
-			     if(list == null || list.length == 0){
-			       return;
-			     }
-			     
-				for (var i = 0, len = list.length || 0; i < len; i++) {
-					// 각 댓글 항목을 구성하는 HTML 코드 작성
-					var commentId = 'comment_' + list[i].rno;
-					str +="<li class='commentItem_commentContainer' data-rno='"+list[i].rno+"'>";
-					str +="<section class='commentItem_commentHeader'>";
-					str +="  <div class='commentItem_avatarWrapper_'>"
-					// 사용자 이미지 추가
-					str +="		<div class='commentItem_commentInfo'><div class='commentItem_title'>"
-					str +="			<div class='commentItem_userNickname'>"+list[i].replyer+"</div>"
-					str +="			<div class='commentItem_registeredDate'>"+replyService.displayTime(list[i].replyDate)+"</div>"
-					str +="		</div></div></div>"
-					if (unameValue == list[i].replyer) {
-						str += "<section class='commentButtons_buttonWrapper'>";
-						str += "<button id='modBtn_" + list[i].rno + "' class='commentButtons_buttons' onclick='showEditCommentForm(" + list[i].rno + ")'>수정</button> ";
-						str += "<button id='remBtn' class='commentButtons_buttons' onclick='deleteReply("+list[i].rno+")'>삭제</button>";
-						str += "</section>";
-					}else if(adminValue !=  null) {
-						str += "<section class='commentButtons_buttonWrapper'>";
-						str += "<button id='remBtn' class='commentButtons_buttons' onclick='deleteReply("+list[i].rno+")'>삭제</button>";
-						str += "</section>";
-					}
-					
-					str +="</section><section class='commentItem_commentContent'><p class='commentItem_commentContent'>"+list[i].reply+"</p>"
-					// 현재 로그인한 사용자와 댓글 작성자가 같은 경우에만 수정/삭제 버튼 추가
-					if (unameValue == list[i].replyer) {
-						// 댓글 수정 입력 폼 추가
-						str += "<div><input class='commentItem_modifyInput' type='hidden' name='contentInput'"
-						str += "placeholder='"+list[i].reply+"' value='"+list[i].reply+"' >"
-						str += "<div class='commentItem_commentInputButton' style='display: none;'>";
-						str += "<button id='canBtn' class='commentItem_buttonCancel' name='cancle'>취소</button>";
-						str += "<button class='commentItem_buttonComplete' name='complete'>완료</button>";
-						str += "</div></div>";
-					}
-					str += "</section></li>";
-				}// end for 
+			// 목록 보여주는 함수
+			function showList(page){ 
+				console.log("show list " + page);
+			    
+				// reply.js에 추가되어있는 replyService함수 호출
+			    replyService.getList({bno:bnoValue,page: page|| 1 }, function(replyCnt, list) {
+			      
+				    console.log("replyCnt: "+ replyCnt );
+				    console.log("list: " + list);
+				    console.log(list);
+				    
+				    if(page == -1){
+				      pageNum = Math.ceil(replyCnt/10.0);
+				      showList(pageNum);
+				      return;
+				    }
+			      
+				     var str="";
+				     
+				     if(list == null || list.length == 0){
+				       return;
+				     }
+				     
+					for (var i = 0, len = list.length || 0; i < len; i++) {
+						// 각 댓글 항목을 구성하는 HTML 코드 작성
+						var commentId = 'comment_' + list[i].rno;
+						str +="<li class='commentItem_commentContainer' data-rno='"+list[i].rno+"'>";
+						str +="<section class='commentItem_commentHeader'>";
+						str +="  <div class='commentItem_avatarWrapper_'>"
+						// 사용자 이미지 추가
+						str +="		<div class='commentItem_commentInfo'><div class='commentItem_title'>"
+						str +="			<div class='commentItem_userNickname'>"+list[i].replyer+"</div>"
+						str +="			<div class='commentItem_registeredDate'>"+replyService.displayTime(list[i].replyDate)+"</div>"
+						str +="		</div></div></div>"
+						if (unameValue == list[i].replyer) {
+							str += "<section class='commentButtons_buttonWrapper'>";
+							str += "<button id='modBtn_" + list[i].rno + "' class='commentButtons_buttons' onclick='showEditCommentForm(" + list[i].rno + ")'>수정</button> ";
+							str += "<button id='remBtn' class='commentButtons_buttons' onclick='deleteReply("+list[i].rno+")'>삭제</button>";
+							str += "</section>";
+						}else if(adminValue !=  null) {
+							str += "<section class='commentButtons_buttonWrapper'>";
+							str += "<button id='remBtn' class='commentButtons_buttons' onclick='deleteReply("+list[i].rno+")'>삭제</button>";
+							str += "</section>";
+						}
+						
+						str +="</section><section class='commentItem_commentContent'><p class='commentItem_commentContent'>"+list[i].reply+"</p>"
+						// 현재 로그인한 사용자와 댓글 작성자가 같은 경우에만 수정/삭제 버튼 추가
+						if (unameValue == list[i].replyer) {
+							// 댓글 수정 입력 폼 추가
+							str += "<div><input class='commentItem_modifyInput' type='hidden' name='contentInput'"
+							str += "placeholder='"+list[i].reply+"' value='"+list[i].reply+"' >"
+							str += "<div class='commentItem_commentInputButton' style='display: none;'>";
+							str += "<button id='canBtn' class='commentItem_buttonCancel' name='cancle'>취소</button>";
+							str += "<button class='commentItem_buttonComplete' name='complete'>완료</button>";
+							str += "</div></div>";
+						}
+						str += "</section></li>";
+					}// end for 
+			    
+				     // 0426 댓글 수정부분 추가
+				    replyUL.html(str);
+					showReplyPage(replyCnt);
+				});//end getList
+			}//end showList
+			
+			
+			 
+			 
+		    var pageNum = 1;
+		    var replyPageFooter = $(".panel-footer");
 		    
-			     // 0426 댓글 수정부분 추가
-			    replyUL.html(str);
-				showReplyPage(replyCnt);
-			});//end getList
-		}//end showList
-		
-		
-		 
-		 
-	    var pageNum = 1;
-	    var replyPageFooter = $(".panel-footer");
+		    // 댓글 페이지네이션
+		    function showReplyPage(replyCnt){
+		      
+		      var endNum = Math.ceil(pageNum / 10.0) * 10;  
+		      var startNum = endNum - 9; 
+		      
+		      var prev = startNum != 1;
+		      var next = false;
+		      
+		      if(endNum * 10 >= replyCnt){
+		        endNum = Math.ceil(replyCnt/10.0);
+		      }
+		      
+		      if(endNum * 10 < replyCnt){
+		        next = true;
+		      }
+		      
+		      var str = "<ul class='pagination pull-right'>";
+		      
+		      if(prev){
+		        str+= "<li class='page-item'><a class='page-link' href='"+(startNum -1)+"'>Previous</a></li>";
+		      }
+		      
+		      for(var i = startNum ; i <= endNum; i++){
+		        
+		        var active = pageNum == i? "active":"";
+		        
+		        str+= "<li class='page-item "+active+" '><a class='page-link' href='"+i+"'>"+i+"</a></li>";
+		      }
+		      
+		      if(next){
+		        str+= "<li class='page-item'><a class='page-link' href='"+(endNum + 1)+"'>Next</a></li>";
+		      }
+		      
+		      str += "</ul></div>";
+		      
+		      console.log(str);
+		      
+		      replyPageFooter.html(str);
+		    }// end function showReplyPage
+		     
+		    replyPageFooter.on("click","li a", function(e){
+		       e.preventDefault();
+		       console.log("page click");
+		       
+		       var targetPageNum = $(this).attr("href");
+		       
+		       console.log("targetPageNum: " + targetPageNum);
+		       
+		       pageNum = targetPageNum;
+		       
+		       showList(pageNum);
+		     }); //end replyPageFooter
+	   
+		    // 4-25 추가
+		    var comment = $('#comment');
+	
+		    $("#addReplyBtn").on("click",function(e){
+		      
+		      var reply = {
+		            reply: comment.val(),
+		            replyer:unameValue,
+		            bno:bnoValue
+		          };
+		      replyService.add(reply, function(result){
+		        
+		        alert(result);
+		        		        
+		        showList(1);
+		        showList(-1);
+		        
+		      });//end replyService.add 
+		    });//end onClick function
+		});
 	    
-	    // 댓글 페이지네이션
-	    function showReplyPage(replyCnt){
-	      
-	      var endNum = Math.ceil(pageNum / 10.0) * 10;  
-	      var startNum = endNum - 9; 
-	      
-	      var prev = startNum != 1;
-	      var next = false;
-	      
-	      if(endNum * 10 >= replyCnt){
-	        endNum = Math.ceil(replyCnt/10.0);
-	      }
-	      
-	      if(endNum * 10 < replyCnt){
-	        next = true;
-	      }
-	      
-	      var str = "<ul class='pagination pull-right'>";
-	      
-	      if(prev){
-	        str+= "<li class='page-item'><a class='page-link' href='"+(startNum -1)+"'>Previous</a></li>";
-	      }
-	      
-	      for(var i = startNum ; i <= endNum; i++){
-	        
-	        var active = pageNum == i? "active":"";
-	        
-	        str+= "<li class='page-item "+active+" '><a class='page-link' href='"+i+"'>"+i+"</a></li>";
-	      }
-	      
-	      if(next){
-	        str+= "<li class='page-item'><a class='page-link' href='"+(endNum + 1)+"'>Next</a></li>";
-	      }
-	      
-	      str += "</ul></div>";
-	      
-	      console.log(str);
-	      
-	      replyPageFooter.html(str);
-	    }// end function showReplyPage
-	     
-	    replyPageFooter.on("click","li a", function(e){
-	       e.preventDefault();
-	       console.log("page click");
-	       
-	       var targetPageNum = $(this).attr("href");
-	       
-	       console.log("targetPageNum: " + targetPageNum);
-	       
-	       pageNum = targetPageNum;
-	       
-	       showList(pageNum);
-	     }); //end replyPageFooter
-   
-	    // 4-25 추가
-	    var comment = $('#comment');
-
-	    $("#addReplyBtn").on("click",function(e){
-	      
-	      var reply = {
-	            reply: comment.val(),
-	            replyer:unameValue,
-	            bno:bnoValue
-	          };
-	      replyService.add(reply, function(result){
-	        
-	        alert(result);
-	        		        
-	        showList(1);
-	        showList(-1);
-	        
-	      });//end replyService.add 
-	    });//end onClick function
-	});
-    
-</script>
-
-<script type="text/javascript">
-$(document).ready(function() {
-  
-  var operForm = $("#operForm"); 
-  
-  $("button[data-oper='modify']").on("click", function(e){
-    
-    operForm.attr("action","/board/modify").submit();
-    
-  });
-  
-    
-  $("button[data-oper='list']").on("click", function(e){
-    
-    operForm.find("#bno").remove();
-    operForm.attr("action","/board/main")
-    operForm.submit();
-    
-  });
-  /* 마감 기능 */
-  // '마감' 또는 '마감취소' 버튼 display 기존값으로 초기화
-	var status = '<c:out value="${board.status}"/>'; // expireck
-	if (status == 'closed') {
-	    $("#closed").css("display", "none");
-	} else {
-		$("#opend").css("display", "none");
-	}
+	</script>
 	
-	// "네, 마감할게요." 버튼 눌렀을 시
-	$("button[data-oper='closed']").on("click", function(e){		
-		  	var bnoValue = '<c:out value="${board.bno}"/>'; // bno
-		  	var data = {bno : bnoValue};
-		  	
-			$.ajax({
-				type : "get",
-				url : "/board/upClose",
-				data : data,
-				success : function(result){
-					console.log("성공 여부" + result);
-					if(result != 'fail'){
-						$("#closed").css("display", "none");
-						$("#opend").css("display","inline-block");
+	<script type="text/javascript">
+	$(document).ready(function() {
+	  
+	  var operForm = $("#operForm"); 
+	  
+	  $("button[data-oper='modify']").on("click", function(e){
+	    
+	    operForm.attr("action","/board/modify").submit();
+	    
+	  });
+	  
+	    
+	  $("button[data-oper='list']").on("click", function(e){
+	    
+	    operForm.find("#bno").remove();
+	    operForm.attr("action","/board/main")
+	    operForm.submit();
+	    
+	  });
+	  /* 마감 기능 */
+	  // '마감' 또는 '마감취소' 버튼 display 기존값으로 초기화
+		var status = '<c:out value="${board.status}"/>'; // expireck
+		if (status == 'closed') {
+		    $("#closed").css("display", "none");
+		} else {
+			$("#opend").css("display", "none");
+		}
+		
+		// "네, 마감할게요." 버튼 눌렀을 시
+		$("button[data-oper='closed']").on("click", function(e){		
+			  	var bnoValue = '<c:out value="${board.bno}"/>'; // bno
+			  	var data = {bno : bnoValue};
+			  	
+				$.ajax({
+					type : "get",
+					url : "/board/upClose",
+					data : data,
+					success : function(result){
+						console.log("성공 여부" + result);
+						if(result != 'fail'){
+							$("#closed").css("display", "none");
+							$("#opend").css("display","inline-block");
+						}
 					}
-				}
-			});		
-			$("#deadlineModal").modal('hide');
+				});		
+				$("#deadlineModal").modal('hide');
+		});
+		
+		// "마감 취소" 버튼 눌렀을 시
+		$("button[data-oper='opend']").on("click", function(e){		
+			  	var bnoValue = '<c:out value="${board.bno}"/>'; // bno
+			  	var data = {bno : bnoValue};
+			  	
+				$.ajax({
+					type : "get",
+					url : "/board/upOpen",
+					data : data,
+					success : function(result){
+						console.log("성공 여부" + result);
+						if(result != 'fail'){
+							$("#opend").css("display", "none");
+							$("#closed").css("display","inline-block");
+						}
+					}
+				});			
+				$("#resetModal").modal('hide');
+		}); // end 버튼
 	});
-	
-	// "마감 취소" 버튼 눌렀을 시
-	$("button[data-oper='opend']").on("click", function(e){		
-		  	var bnoValue = '<c:out value="${board.bno}"/>'; // bno
-		  	var data = {bno : bnoValue};
-		  	
-			$.ajax({
-				type : "get",
-				url : "/board/upOpen",
-				data : data,
-				success : function(result){
-					console.log("성공 여부" + result);
-					if(result != 'fail'){
-						$("#opend").css("display", "none");
-						$("#closed").css("display","inline-block");
-					}
-				}
-			});			
-			$("#resetModal").modal('hide');
-	}); // end 버튼
-});
-</script>
+	</script>
 
 
 </html>
