@@ -1,4 +1,5 @@
 <h3>📚 스터디 허브(Study Hub) : 개발자 스터디 모집 사이트</h3>
+(<a href ="http://www.studyinhub.shop:8080/board/main">스터디 허브를 구경하시려면 글씨를 클릭해주세요 :)</a>)
 <hr>
 <div>
 ◾ 개발 기간 : 2023.03.29 ~ 2023.05.08 (6주) <br>
@@ -24,9 +25,12 @@
   <div>
     <img src="https://img.shields.io/badge/Oracle-F80000?style=flat&logo=Oracle&logoColor=white" />
     <img src="https://img.shields.io/badge/SQLDeveloper-4479A1?style=flat&logo=SQLDeveloper&logoColor=white" />
+  </div>
+  <div>
     <img src="https://img.shields.io/badge/STS-6DB33F?style=flat&logo=STS&logoColor=white" />
     <img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=GitHub&logoColor=white" />	
     <img src="https://img.shields.io/badge/Jira-0052CC?style=flat&logo=Jira&logoColor=white" />
+    <img src="https://img.shields.io/badge/Amazon EC2-FF9900?style=flat&logo=amazonec2&logoColor=white" />
   </div>
 <hr>
 💭 <b>Output</b> in <a href="https://drive.google.com/drive/folders/12MiA-sLLFkLIDzwI3Ad7u3kWeMJgjZtt?usp=sharing">Google Drive</a><br> 
