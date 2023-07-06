@@ -1,5 +1,5 @@
 <h3>📚 스터디 허브(Study Hub) : 개발자 스터디 모집 사이트</h3>
-(<a href ="http://www.studyinhub.shop/board/main">스터디 허브를 구경하시려면 글씨를 클릭해주세요 :)</a>)
+(<a href ="https://studyinhub.shop/board/main">스터디 허브를 구경하시려면 글씨를 클릭해주세요 :)</a>)
 <hr>
 <div>
 ◾ 개발 기간 : 2023.03.29 ~ 2023.05.08 (6주) <br>
