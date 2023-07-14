@@ -107,10 +107,10 @@
 		bno = #{bno}
 	</update>
 	
-	<!-- jsh 0502 마감일자 지난 게시글의 status 값을 closed로 변경 -->
+	<!-- jsh 0706 마감일자 지난 게시글의 status 값을 closed로 변경 -->
 	<update id="updateBoardStatus">
 	  <![CDATA[
-	  	UPDATE board_tbl SET status = 'closed' WHERE deadline < TRUNC(SYSDATE)
+	  	UPDATE board_tbl SET status = 'closed' WHERE TO_DATE(deadline, 'YY/MM/DD') < TRUNC(SYSDATE)
 	  ]]>
 	</update>
 	
