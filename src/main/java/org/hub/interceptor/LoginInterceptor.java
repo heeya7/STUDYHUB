@@ -59,8 +59,6 @@ public class LoginInterceptor extends HandlerInterceptorAdapter implements Sessi
 				// 4. 로그인 성공 후 가려던 곳이 없는 사람은 main으로 보내준다
 				response.sendRedirect("/board/main");
 			}
-		} else { //로그인 실패
-			response.sendRedirect("/user/login");
-		}
+		} else { } // 로그인 실패 -> loginPost.jsp에서 alert("아이디 또는 비번 불일치") 후 로그인 페이지로 재이동
 	}
 }
